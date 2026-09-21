@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheat Sheet — API REST com Java &amp; Spring Boot</title>
+<style>
+  :root{
+    --bg: #f7f7f9;
+    --bg-elevated: #ffffff;
+    --border: #e3e3e8;
+    --text: #1c1c22;
+    --text-muted: #63636f;
+    --accent: #4f46e5;
+    --accent-soft: #eef0ff;
+    --code-bg: #1e1e2e;
+    --result-bg: #f0fdf4;
+    --result-border: #bbf0cf;
+    --result-label: #15803d;
+    --tag-controller: #4f46e5;
+    --tag-entity: #0f766e;
+    --tag-repository: #b45309;
+    --tag-service: #be185d;
+    --tag-dto: #7c3aed;
+    --tag-validacao: #0369a1;
+    --tag-excecoes: #b91c1c;
+    --tag-config: #4d7c0f;
+    --tag-seguranca: #1d4ed8;
+    --tag-testes: #a16207;
+    --tag-migrations: #15803d;
+    --tag-cors: #c2410c;
+    --tag-docs: #0e7490;
+    --tag-docker: #78350f;
+    --shadow: 0 1px 2px rgba(20,20,30,0.05), 0 1px 8px rgba(20,20,30,0.04);
+  }
+  [data-theme="dark"]{
+    --bg: #121218;
+    --bg-elevated: #1a1a22;
+    --border: #2b2b35;
+    --text: #ececf1;
+    --text-muted: #9a9aa8;
+    --accent: #818cf8;
+    --accent-soft: #232244;
+    --code-bg: #0e0e14;
+    --result-bg: #0f2418;
+    --result-border: #16532f;
+    --result-label: #4ade80;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.25);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition:background .2s ease, color .2s ease;
+  }
+  code, pre, .mono{
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  /* ===== Layout ===== */
+  .app{ display:flex; min-height:100vh; }
+  .sidebar{
+    width:250px; flex-shrink:0;
+    background:var(--bg-elevated);
+    border-right:1px solid var(--border);
+    padding:20px 14px;
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  .sidebar h1{
+    font-size:15px; font-weight:700; margin:4px 6px 2px;
+    letter-spacing:.2px;
+  }
+  .sidebar .subtitle{
+    font-size:12px; color:var(--text-muted); margin:0 6px 18px;
+  }
+  .nav-group{ margin-bottom:4px; }
+  .nav-link{
+    display:flex; align-items:center; gap:8px;
+    padding:7px 8px; border-radius:8px;
+    color:var(--text); text-decoration:none;
+    font-size:13.5px; font-weight:500;
+    margin-bottom:1px;
+  }
+  .nav-link:hover{ background:var(--accent-soft); }
+  .nav-link.active{ background:var(--accent-soft); color:var(--accent); }
+  .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  .main{ flex:1; min-width:0; padding:28px 40px 80px; max-width:920px; }
+
+  .topbar{
+    display:flex; align-items:center; gap:12px; justify-content:space-between;
+    margin-bottom:26px; flex-wrap:wrap;
+  }
+  .search-wrap{ position:relative; flex:1; min-width:220px; }
+  .search-wrap input{
+    width:100%; padding:9px 12px 9px 34px;
+    border-radius:9px; border:1px solid var(--border);
+    background:var(--bg-elevated); color:var(--text);
+    font-size:13.5px; outline:none;
+  }
+  .search-wrap input:focus{ border-color:var(--accent); }
+  .search-wrap svg{ position:absolute; left:11px; top:50%; transform:translateY(-50%); opacity:.5; }
+  .theme-toggle{
+    border:1px solid var(--border); background:var(--bg-elevated); color:var(--text);
+    padding:8px 12px; border-radius:9px; font-size:13px; cursor:pointer; font-weight:500;
+  }
+  .theme-toggle:hover{ border-color:var(--accent); }
+
+  .hero{ margin-bottom:18px; }
+  .hero h2{ font-size:24px; margin:0 0 6px; }
+  .hero p{ color:var(--text-muted); font-size:14px; margin:0; max-width:680px; line-height:1.55; }
+
+  .version-note{
+    background:var(--accent-soft); border:1px solid var(--border); border-radius:10px;
+    padding:11px 14px; font-size:12.8px; line-height:1.55; color:var(--text);
+    margin-bottom:30px; max-width:780px;
+  }
+  .version-note a{ color:var(--accent); }
+
+  section.topic{ margin-bottom:46px; scroll-margin-top:20px; }
+  .topic-head{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .topic-head .badge{
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;
+    padding:3px 9px; border-radius:999px; color:#fff;
+  }
+  .topic-head h2{ font-size:19px; margin:0; }
+  .topic-desc{ color:var(--text-muted); font-size:13.5px; margin:0 0 16px; line-height:1.5; }
+
+  .verb-group{
+    display:flex; align-items:center; gap:8px; margin:26px 0 12px; font-size:13px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted);
+  }
+  .verb-group:first-of-type{ margin-top:8px; }
+  .verb-group .verb-pill{
+    font-size:11px; font-weight:700; letter-spacing:.4px; padding:3px 10px; border-radius:999px;
+    color:#fff; text-transform:uppercase;
+  }
+  .verb-group::after{ content:""; flex:1; height:1px; background:var(--border); }
+  .pill-get{ background:#0e7490; }
+  .pill-post{ background:#15803d; }
+  .pill-put{ background:#1d4ed8; }
+  .pill-patch{ background:#a16207; }
+  .pill-delete{ background:#b91c1c; }
+  .pill-extra{ background:#6b21a8; }
+
+  .card{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px 16px; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .card h3{ font-size:14.5px; margin:0 0 6px; }
+  .card .theory{ font-size:13px; color:var(--text); margin:0 0 11px; line-height:1.65; }
+  .card .theory strong{ color:var(--text); font-weight:700; }
+  .card pre{
+    background:var(--code-bg); border-radius:8px; padding:11px 13px;
+    overflow-x:auto; margin:0 0 8px; font-size:12.3px; line-height:1.55;
+  }
+  .card pre:last-child{ margin-bottom:0; }
+  .card pre code{ background:none; color:#d8d8e2; }
+  /* ===== Manual syntax highlighting tokens (no external deps) ===== */
+  .tok-comment{ color:#8a8ba0; font-style:italic; }
+  .tok-string{ color:#c9a86a; }
+  .tok-annotation{ color:#c586e2; }
+  .tok-keyword{ color:#6ea6f5; font-weight:600; }
+
+  /* ===== Expected-result callout ===== */
+  .result-box{
+    margin-top:10px; background:var(--result-bg); border:1px solid var(--result-border);
+    border-radius:8px; padding:9px 12px 10px;
+  }
+  .result-box .result-label{
+    display:block; font-size:10.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.5px; color:var(--result-label); margin-bottom:4px;
+  }
+  .result-box p{ margin:0; font-size:12.6px; line-height:1.55; color:var(--text); }
+  .result-box .mono{ font-size:12px; }
+
+  .practice-list{ list-style:none; margin:0; padding:0; }
+  .practice-list li{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; margin-bottom:8px; font-size:13.3px; line-height:1.5;
+    display:flex; gap:10px;
+  }
+  .practice-list li::before{ content:"✓"; color:var(--accent); font-weight:700; flex-shrink:0; }
+
+  table.status-table{ width:100%; border-collapse:collapse; font-size:13.3px; }
+  table.status-table th, table.status-table td{
+    text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);
+  }
+  table.status-table th{ color:var(--text-muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.3px; }
+  table.status-table td.code{ font-family:monospace; font-weight:700; }
+  .status-2xx{ color:#15803d; }
+  .status-4xx{ color:#b45309; }
+  .status-5xx{ color:#b91c1c; }
+
+  .hidden{ display:none !important; }
+
+  footer{
+    color:var(--text-muted); font-size:12px; text-align:center; padding:30px 0 10px;
+    border-top:1px solid var(--border); margin-top:20px;
+  }
+
+  @media (max-width: 820px){
+    .sidebar{ display:none; }
+    .main{ padding:20px 18px 60px; max-width:none; }
+  }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <h1>API REST · Java</h1>
+    <p class="subtitle">Cheat sheet de revisão</p>
+
+    <nav id="nav">
+      <a class="nav-link" href="#controller"><span class="dot" style="background:var(--tag-controller)"></span>Controller</a>
+      <a class="nav-link" href="#entity"><span class="dot" style="background:var(--tag-entity)"></span>Entity</a>
+      <a class="nav-link" href="#repository"><span class="dot" style="background:var(--tag-repository)"></span>Repository</a>
+      <a class="nav-link" href="#service"><span class="dot" style="background:var(--tag-service)"></span>Service</a>
+      <a class="nav-link" href="#dto"><span class="dot" style="background:var(--tag-dto)"></span>DTO</a>
+      <a class="nav-link" href="#validacao"><span class="dot" style="background:var(--tag-validacao)"></span>Validação</a>
+      <a class="nav-link" href="#excecoes"><span class="dot" style="background:var(--tag-excecoes)"></span>Exceções</a>
+      <a class="nav-link" href="#configuracao"><span class="dot" style="background:var(--tag-config)"></span>Configuração</a>
+      <a class="nav-link" href="#migrations"><span class="dot" style="background:var(--tag-migrations)"></span>Migrations</a>
+      <a class="nav-link" href="#seguranca"><span class="dot" style="background:var(--tag-seguranca)"></span>Segurança</a>
+      <a class="nav-link" href="#cors"><span class="dot" style="background:var(--tag-cors)"></span>CORS</a>
+      <a class="nav-link" href="#testes"><span class="dot" style="background:var(--tag-testes)"></span>Testes</a>
+      <a class="nav-link" href="#documentacao"><span class="dot" style="background:var(--tag-docs)"></span>Documentação</a>
+      <a class="nav-link" href="#docker"><span class="dot" style="background:var(--tag-docker)"></span>Docker &amp; Deploy</a>
+      <a class="nav-link" href="#status-http"><span class="dot" style="background:#374151"></span>Status HTTP</a>
+      <a class="nav-link" href="#boas-praticas"><span class="dot" style="background:#374151"></span>Boas práticas gerais</a>
+    </nav>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="searchInput" type="text" placeholder="Filtrar por palavra-chave (ex: @Valid, JPA, Mockito...)">
+      </div>
+      <button class="theme-toggle" id="themeToggle">🌙 Modo escuro</button>
+    </div>
+
+    <div class="hero">
+      <h2>Revisão rápida: camadas de uma API REST em Spring Boot</h2>
+      <p>Cada card explica quando usar o recurso, como ele funciona por baixo dos panos, com qual outra classe ele se relaciona
+      e o resultado esperado ao rodar. Use a busca para filtrar por anotação ou palavra-chave, ou navegue pelo menu lateral.</p>
+    </div>
+
+    <div class="version-note">
+      <strong>Base de versões (ago/2026):</strong> Java 17+ · Spring Boot 3.5.x (LTS) ou 4.0/4.1.x (linha atual) — as anotações e o código desta página valem para as duas. Números de versão de dependências (springdoc, jjwt, Flyway...) mudam com frequência: trate os exemplos abaixo como ponto de partida e confira sempre a versão mais recente no <a href="https://mvnrepository.com" target="_blank" rel="noopener">Maven Central</a> antes de fixar no seu <span class="mono">pom.xml</span>.
+    </div>
+
+    <!-- ===================== CONTROLLER ===================== -->
+    <section class="topic" id="controller">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-controller)">Controller</span>
+        <h2>Camada de entrada HTTP</h2>
+      </div>
+      <p class="topic-desc">Recebe a requisição, delega ao Service e devolve a resposta. Não deve conter regra de negócio nem acesso direto ao banco. Todos os exemplos abaixo pertencem a uma mesma classe, <span class="mono">ProdutoController</span>, exceto onde indicado (sub-recursos de avaliação).</p>
+
+      <table class="status-table">
+        <thead><tr><th>Verbo</th><th>Anotação Spring</th><th>Idempotente?</th><th>Uso típico no dia a dia</th></tr></thead>
+        <tbody>
+          <tr><td class="code">GET</td><td><span class="mono">@GetMapping</span></td><td>Sim</td><td>Buscar/listar recursos, sem alterar estado</td></tr>
+          <tr><td class="code">POST</td><td><span class="mono">@PostMapping</span></td><td>Não</td><td>Criar um novo recurso ou disparar uma ação</td></tr>
+          <tr><td class="code">PUT</td><td><span class="mono">@PutMapping</span></td><td>Sim</td><td>Substituir por completo um recurso existente</td></tr>
+          <tr><td class="code">PATCH</td><td><span class="mono">@PatchMapping</span></td><td>Depende</td><td>Atualizar parcialmente um recurso (poucos campos)</td></tr>
+          <tr><td class="code">DELETE</td><td><span class="mono">@DeleteMapping</span></td><td>Sim</td><td>Remover um recurso (único ou em lote)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <h3>Anotação base da classe</h3>
+        <p class="theory"><strong>Quando usar:</strong> em toda classe que expõe endpoints HTTP — é o ponto de entrada da API. <strong>Como funciona:</strong> <span class="mono">@RestController</span> registra a classe como um bean do Spring e serializa automaticamente o retorno de cada método para JSON (via Jackson), sem precisar anotar método por método com <span class="mono">@ResponseBody</span>. <span class="mono">@RequestMapping("/api/produtos")</span> define o prefixo comum: todo endpoint declarado dentro da classe herda esse caminho. <strong>Relacionado a:</strong> o construtor recebe <span class="mono">ProdutoService</span> por injeção de dependência — é para lá que este Controller delega toda a lógica de negócio (ver seção Service).</p>
+        <pre><code class="language-java">@RestController
+@RequestMapping("/api/produtos") // prefixo de todos os endpoints
+public class ProdutoController {
+    private final ProdutoService service; // injeção via construtor
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Ao subir a aplicação, o Spring registra automaticamente todas as rotas <span class="mono">/api/produtos/*</span> mapeadas nesta classe — nenhuma configuração manual de rota é necessária.</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-get">GET</span> Leitura de recursos</h4>
+
+      <div class="card">
+        <h3>GET com parâmetro de caminho</h3>
+        <p class="theory"><strong>Quando usar:</strong> para buscar um único recurso identificado por um valor na própria URL, como um id. <strong>Como funciona:</strong> o Spring extrai o trecho <span class="mono">{id}</span> da URL, converte para o tipo declarado (<span class="mono">Long</span>) e injeta como argumento do método via <span class="mono">@PathVariable</span>. <strong>Relacionado a:</strong> este método chama <span class="mono">service.buscarPorId(id)</span> em <span class="mono">ProdutoService</span>, que por sua vez consulta o <span class="mono">ProdutoRepository</span>.</p>
+        <pre><code class="language-java">@GetMapping("/{id}")
+public ResponseEntity&lt;ProdutoDTO&gt; buscar(@PathVariable Long id) {
+    return ResponseEntity.ok(service.buscarPorId(id));
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">GET /api/produtos/7</span> retorna <span class="mono">200 OK</span> com o JSON do produto de id 7. Se o id não existir, o Service lança <span class="mono">ProdutoNaoEncontradoException</span> (seção Exceções), resultando em <span class="mono">404</span>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>GET com parâmetro de query (opcional)</h3>
+        <p class="theory"><strong>Quando usar:</strong> em listagens com filtro opcional, sem precisar criar uma URL separada para cada tipo de busca. <strong>Como funciona:</strong> <span class="mono">@RequestParam</span> lê o parâmetro <span class="mono">nome</span> da query string (<span class="mono">?nome=...</span>); como <span class="mono">required = false</span>, a requisição funciona normalmente mesmo sem esse parâmetro (chega como <span class="mono">null</span>). <strong>Relacionado a:</strong> decide dinamicamente entre <span class="mono">listarTodos()</span> e <span class="mono">buscarPorNome(nome)</span>, ambos em <span class="mono">ProdutoService</span>.</p>
+        <pre><code class="language-java">@GetMapping
+public List&lt;ProdutoDTO&gt; listar(
+        @RequestParam(required = false) String nome) {
+    return nome == null ? service.listarTodos() : service.buscarPorNome(nome);
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">GET /api/produtos</span> retorna todos os produtos; <span class="mono">GET /api/produtos?nome=mouse</span> retorna <span class="mono">200 OK</span> só com os produtos cujo nome contém "mouse" (ignorando maiúsculas/minúsculas).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>GET de sub-recurso (recurso aninhado)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando o recurso pertence claramente a outro (ex: avaliações de um produto) — é mais comum no dia a dia do que parece, sempre que há relação 1:N navegável pela API. <strong>Como funciona:</strong> o path combina os dois níveis, <span class="mono">/{produtoId}/avaliacoes</span>; o Spring extrai o <span class="mono">produtoId</span> como <span class="mono">@PathVariable</span> normalmente, e o Service usa esse id para filtrar. <strong>Relacionado a:</strong> chama <span class="mono">service.listarAvaliacoesDoProduto(produtoId)</span>, que internamente pode usar um <span class="mono">AvaliacaoRepository</span> com um método como <span class="mono">findByProdutoId(Long produtoId)</span>.</p>
+        <pre><code class="language-java">@GetMapping("/{produtoId}/avaliacoes")
+public List&lt;AvaliacaoDTO&gt; listarAvaliacoes(@PathVariable Long produtoId) {
+    return service.listarAvaliacoesDoProduto(produtoId);
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">GET /api/produtos/7/avaliacoes</span> retorna <span class="mono">200 OK</span> com a lista de avaliações do produto 7. Se o produto não existir, o Service deve validar isso antes de buscar as avaliações, lançando <span class="mono">ProdutoNaoEncontradoException</span> (→ 404).</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-post">POST</span> Criação de recursos</h4>
+
+      <div class="card">
+        <h3>POST com corpo validado</h3>
+        <p class="theory"><strong>Quando usar:</strong> para criar um novo recurso a partir de dados enviados pelo cliente no corpo da requisição. <strong>Como funciona:</strong> <span class="mono">@RequestBody</span> desserializa o JSON recebido para um <span class="mono">ProdutoRequestDTO</span> (seção DTO); <span class="mono">@Valid</span> dispara as validações Bean Validation declaradas nesse DTO antes mesmo do corpo do método rodar. <strong>Relacionado a:</strong> delega a <span class="mono">ProdutoService.criar(dto)</span>, que persiste via <span class="mono">ProdutoRepository</span> e devolve um <span class="mono">ProdutoDTO</span> de resposta.</p>
+        <pre><code class="language-java">@PostMapping
+public ResponseEntity&lt;ProdutoDTO&gt; criar(@Valid @RequestBody ProdutoRequestDTO dto) {
+    ProdutoDTO criado = service.criar(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(criado); // 201
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Uma requisição válida retorna <span class="mono">201 Created</span> com o produto criado (incluindo o id gerado). Um campo inválido (ex: nome em branco) nunca chega a executar este método — o Spring já responde <span class="mono">400 Bad Request</span> antes, por causa do <span class="mono">@Valid</span>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>POST em sub-recurso</h3>
+        <p class="theory"><strong>Quando usar:</strong> para criar um recurso que só existe no contexto de outro — não faz sentido uma avaliação sem produto. <strong>Como funciona:</strong> igual ao POST comum, mas o path inclui o id do "pai" (<span class="mono">produtoId</span>), que é repassado ao Service junto com o corpo validado. <strong>Relacionado a:</strong> <span class="mono">service.avaliarProduto(produtoId, dto)</span>, que confirma que o produto existe antes de persistir a nova <span class="mono">Avaliacao</span> vinculada a ele.</p>
+        <pre><code class="language-java">@PostMapping("/{produtoId}/avaliacoes")
+public ResponseEntity&lt;AvaliacaoDTO&gt; avaliar(
+        @PathVariable Long produtoId, @Valid @RequestBody AvaliacaoRequestDTO dto) {
+    AvaliacaoDTO criada = service.avaliarProduto(produtoId, dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(criada); // 201
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">POST /api/produtos/7/avaliacoes</span> com corpo válido retorna <span class="mono">201 Created</span> com a avaliação criada, já vinculada ao produto 7.</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-put">PUT</span> Substituição completa</h4>
+
+      <div class="card">
+        <h3>PUT (atualização completa)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para substituir por completo os dados de um recurso já existente, identificado pelo id na URL. <strong>Como funciona:</strong> combina <span class="mono">@PathVariable</span> (identifica o recurso) com <span class="mono">@RequestBody @Valid</span> (o novo estado completo). <strong>Relacionado a:</strong> delega a <span class="mono">ProdutoService.atualizar(id, dto)</span>, que busca a entidade existente no <span class="mono">ProdutoRepository</span> e sobrescreve seus campos.</p>
+        <pre><code class="language-java">@PutMapping("/{id}")
+public ResponseEntity&lt;ProdutoDTO&gt; atualizar(
+        @PathVariable Long id, @Valid @RequestBody ProdutoRequestDTO dto) {
+    return ResponseEntity.ok(service.atualizar(id, dto));
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Retorna <span class="mono">200 OK</span> com o produto atualizado. Se o id não existir, o mesmo <span class="mono">ProdutoNaoEncontradoException</span> do GET por id é lançado, resultando em <span class="mono">404</span>.</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-patch">PATCH</span> Atualização parcial</h4>
+
+      <div class="card">
+        <h3>PATCH com DTO parcial (mais comum no dia a dia)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando o cliente quer alterar só alguns campos, sem reenviar o recurso inteiro (ex: só o preço, em uma tela de "editar preço"). <strong>Como funciona:</strong> o DTO de patch tem todos os campos opcionais (podem vir <span class="mono">null</span>); o Service aplica apenas os campos que chegaram preenchidos, mantendo os demais como estavam na entidade. <strong>Relacionado a:</strong> diferente do <span class="mono">ProdutoRequestDTO</span> usado no POST/PUT, este é um DTO próprio — as anotações de validação (<span class="mono">@NotBlank</span>, etc.) geralmente não fazem sentido aqui, já que ausência de campo é esperada.</p>
+        <pre><code class="language-java">// DTO com campos opcionais — nada é @NotNull/@NotBlank
+public record ProdutoPatchDTO(String nome, BigDecimal preco) {}
+
+@PatchMapping("/{id}")
+public ResponseEntity&lt;ProdutoDTO&gt; atualizarParcial(
+        @PathVariable Long id, @RequestBody ProdutoPatchDTO patch) {
+    return ResponseEntity.ok(service.atualizarParcial(id, patch));
+}
+
+// No Service: aplica só o que veio preenchido
+public ProdutoDTO atualizarParcial(Long id, ProdutoPatchDTO patch) {
+    Produto produto = buscarOuLancar(id);
+    if (patch.nome() != null)  produto.setNome(patch.nome());
+    if (patch.preco() != null) produto.setPreco(patch.preco());
+    return ProdutoDTO.fromEntity(produto); // @Transactional cuida do UPDATE
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">PATCH /api/produtos/7</span> com corpo <span class="mono">{"preco": 199.90}</span> altera só o preço e devolve <span class="mono">200 OK</span> com o produto completo atualizado — o nome permanece o que já estava salvo.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>PATCH com JSON Merge Patch (ObjectMapper)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando você quer um PATCH genérico, sem criar um DTO parcial para cada entidade, seguindo o padrão HTTP oficial de merge patch. <strong>Como funciona:</strong> o cliente envia só os campos que quer mudar, com <span class="mono">Content-Type: application/merge-patch+json</span> (RFC 7396); o Spring injeta o corpo cru como <span class="mono">JsonNode</span>, e <span class="mono">ObjectMapper.readerForUpdating(...)</span> aplica esse JSON por cima da entidade já carregada, sobrescrevendo apenas os campos presentes. <strong>Relacionado a:</strong> usa o <span class="mono">ObjectMapper</span> do próprio Spring (já configurado para Jackson), injetado via construtor no Controller.</p>
+        <pre><code class="language-java">@PatchMapping(path = "/{id}", consumes = "application/merge-patch+json")
+public ResponseEntity&lt;ProdutoDTO&gt; mergePatch(
+        @PathVariable Long id, @RequestBody JsonNode patch) throws IOException {
+    Produto existente = service.buscarEntidadePorId(id);
+    Produto atualizado = objectMapper.readerForUpdating(existente).readValue(patch);
+    return ResponseEntity.ok(service.salvar(atualizado));
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Um PATCH com <span class="mono">{"preco": 199.90}</span> e o header <span class="mono">application/merge-patch+json</span> atualiza só esse campo na entidade em memória antes de salvar — o restante do objeto permanece intacto, mesmo sem um DTO específico para cada combinação de campos.</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-delete">DELETE</span> Remoção de recursos</h4>
+
+      <div class="card">
+        <h3>DELETE</h3>
+        <p class="theory"><strong>Quando usar:</strong> para remover permanentemente um recurso. <strong>Como funciona:</strong> recebe o id pela URL e delega a <span class="mono">service.deletar(id)</span>; em caso de sucesso, devolve uma resposta sem corpo. <strong>Relacionado a:</strong> <span class="mono">ProdutoService.deletar</span>, que também usa o padrão "buscar ou lançar exceção" (seção Service) antes de remover.</p>
+        <pre><code class="language-java">@DeleteMapping("/{id}")
+public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
+    service.deletar(id);
+    return ResponseEntity.noContent().build(); // 204
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">204 No Content</span>, sem corpo de resposta. Chamar DELETE de novo sobre o mesmo id já removido normalmente devolve <span class="mono">404</span>, pois o recurso não existe mais para o Service encontrar.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>DELETE em lote (múltiplos ids)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando a tela permite selecionar vários itens e excluir de uma vez (ex: uma tabela com checkboxes) — evitar N requisições separadas. <strong>Como funciona:</strong> os ids chegam como lista na query string via <span class="mono">@RequestParam</span>; o Service delega ao <span class="mono">JpaRepository.deleteAllById(ids)</span>, que remove todos em uma única operação. <strong>Relacionado a:</strong> ainda é considerado idempotente — repetir a mesma chamada com os mesmos ids não causa efeito colateral adicional, pois os ids já removidos simplesmente são ignorados.</p>
+        <pre><code class="language-java">@DeleteMapping
+public ResponseEntity&lt;Void&gt; deletarEmLote(@RequestParam List&lt;Long&gt; ids) {
+    service.deletarEmLote(ids);
+    return ResponseEntity.noContent().build(); // 204
+}
+
+// No Service:
+public void deletarEmLote(List&lt;Long&gt; ids) {
+    produtoRepository.deleteAllById(ids); // vem pronto no JpaRepository
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">DELETE /api/produtos?ids=1,2,3</span> remove os três produtos de uma vez e retorna <span class="mono">204 No Content</span>. Se algum id não existir, o comportamento padrão do Spring Data é simplesmente ignorá-lo — vale decidir explicitamente se isso é aceitável para o seu caso de uso.</p></div>
+      </div>
+
+      <h4 class="verb-group"><span class="verb-pill pill-extra">Extra</span> Controle fino da resposta</h4>
+
+      <div class="card">
+        <h3>Paginação com Pageable</h3>
+        <p class="theory"><strong>Quando usar:</strong> em listagens que podem crescer muito (centenas ou milhares de registros), evitando devolver tudo de uma vez. <strong>Como funciona:</strong> o Spring interpreta os parâmetros <span class="mono">page</span>, <span class="mono">size</span> e <span class="mono">sort</span> da própria query string e monta um <span class="mono">Pageable</span> automaticamente — não é preciso ler esses parâmetros manualmente. <strong>Relacionado a:</strong> repassado ao <span class="mono">ProdutoService</span>, que passa direto para um método do <span class="mono">ProdutoRepository</span> que retorna <span class="mono">Page&lt;Produto&gt;</span> (ver seção Repository, card "Paginação nativa").</p>
+        <pre><code class="language-java">@GetMapping("/paginado")
+public Page&lt;ProdutoDTO&gt; listarPaginado(
+        @PageableDefault(size = 20, sort = "nome") Pageable pageable) {
+    return service.listarPaginado(pageable);
+}
+// chamada: GET /api/produtos/paginado?page=0&amp;size=20&amp;sort=preco,desc</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Retorna <span class="mono">200 OK</span> com um objeto <span class="mono">Page</span> contendo os 20 produtos mais caros da primeira página, além de metadados como <span class="mono">totalElements</span> e <span class="mono">totalPages</span>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>ResponseEntity com status customizado</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando a resposta automática (200/201/204) não é suficiente e você precisa de um status HTTP específico, um header customizado, ou controle total sobre o corpo. <strong>Como funciona:</strong> <span class="mono">ResponseEntity</span> é um wrapper genérico que representa a resposta HTTP inteira — status, headers e corpo — deixando explícito o que a API devolve, em vez de depender de convenções implícitas.</p>
+        <pre><code class="language-java">return ResponseEntity
+        .status(HttpStatus.CONFLICT)   // 409
+        .header("X-Motivo", "duplicado")
+        .body(erroDTO);</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O cliente recebe <span class="mono">409 Conflict</span>, com o header <span class="mono">X-Motivo: duplicado</span> e o corpo JSON de <span class="mono">erroDTO</span> — útil, por exemplo, ao tentar criar um produto com nome já existente.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Controller "magro": nada de lógica de negócio aqui — apenas orquestra a chamada ao Service.</li>
+        <li>URLs com substantivo no plural (<span class="mono">/produtos</span>), nunca verbos (<span class="mono">/criarProduto</span> ❌).</li>
+        <li>Sempre devolva o status HTTP correto (201 ao criar, 204 ao deletar, 404 quando não encontrado).</li>
+        <li>Versione a API quando fizer mudanças que quebram compatibilidade: <span class="mono">/api/v1/produtos</span>.</li>
+        <li>Nunca retorne a Entity diretamente — sempre um DTO.</li>
+        <li><span class="mono">PUT</span> substitui o recurso inteiro (o cliente deve enviar todos os campos); <span class="mono">PATCH</span> altera só o que foi enviado — escolha com base no que a tela do cliente realmente envia, não por hábito.</li>
+        <li>Considere "soft delete" (uma coluna <span class="mono">ativo</span>/<span class="mono">deletadoEm</span>) em vez de exclusão física quando o histórico do recurso importa — nesse caso, <span class="mono">DELETE</span> vira um <span class="mono">UPDATE</span> internamente, mas a API continua expondo o verbo DELETE.</li>
+        <li>Endpoints de exclusão em lote continuam idempotentes: repetir a chamada com os mesmos ids não deve gerar erro, mesmo que parte deles já tenha sido removida antes.</li>
+        <li>Sub-recursos (<span class="mono">/produtos/{id}/avaliacoes</span>) só fazem sentido quando o filho não existe sem o pai — caso contrário, prefira um recurso de primeiro nível com filtro (<span class="mono">/avaliacoes?produtoId=7</span>).</li>
+      </ul>
+    </section>
+
+    <!-- ===================== ENTITY ===================== -->
+    <section class="topic" id="entity">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-entity)">Entity</span>
+        <h2>Mapeamento objeto-relacional (JPA)</h2>
+      </div>
+      <p class="topic-desc">Classe Java que representa uma tabela do banco. Cada instância = uma linha. É a classe <span class="mono">Produto</span> que o <span class="mono">ProdutoRepository</span> (seção Repository) manipula diretamente.</p>
+
+      <div class="card">
+        <h3>Estrutura mínima</h3>
+        <p class="theory"><strong>Quando usar:</strong> em toda classe que deve ser persistida como uma tabela do banco. <strong>Como funciona:</strong> <span class="mono">@Entity</span> registra a classe no contexto de persistência do JPA/Hibernate; <span class="mono">@Table(name=...)</span> define o nome físico da tabela (sem ela, o Hibernate usaria o nome da classe); <span class="mono">@Id</span> marca a chave primária e <span class="mono">@GeneratedValue(strategy = IDENTITY)</span> delega ao próprio banco a geração do valor (equivalente a <span class="mono">AUTO_INCREMENT</span>/<span class="mono">SERIAL</span>). <strong>Relacionado a:</strong> consumida diretamente por <span class="mono">ProdutoRepository extends JpaRepository&lt;Produto, Long&gt;</span> — nunca deve ser exposta como resposta da API (para isso existe o <span class="mono">ProdutoDTO</span>, seção DTO).</p>
+        <pre><code class="language-java">@Entity
+@Table(name = "produtos")
+public class Produto {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 120)
+    private String nome;
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O Hibernate cria (ou valida, dependendo de <span class="mono">ddl-auto</span>) uma tabela <span class="mono">produtos</span> com colunas <span class="mono">id</span> (chave primária, auto-incremento) e <span class="mono">nome</span> (<span class="mono">VARCHAR(120)</span>, <span class="mono">NOT NULL</span>).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Relacionamento N:1 (@ManyToOne)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando muitos registros de uma entidade apontam para um único registro de outra — aqui, vários <span class="mono">Produto</span> pertencem a uma mesma <span class="mono">Categoria</span>. <strong>Como funciona:</strong> <span class="mono">@JoinColumn</span> define a coluna de chave estrangeira (<span class="mono">categoria_id</span>) na tabela <span class="mono">produtos</span>; <span class="mono">fetch = FetchType.LAZY</span> faz o Hibernate não carregar a <span class="mono">Categoria</span> do banco até que o código realmente acesse <span class="mono">produto.getCategoria()</span>, evitando consultas desnecessárias.</p>
+        <pre><code class="language-java">@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "categoria_id")
+private Categoria categoria;</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>A tabela <span class="mono">produtos</span> ganha uma coluna <span class="mono">categoria_id</span> referenciando <span class="mono">categorias(id)</span>. Buscar um produto não dispara automaticamente um SELECT na categoria — só quando ela é efetivamente acessada no código.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Relacionamento 1:N (@OneToMany)</h3>
+        <p class="theory"><strong>Quando usar:</strong> no lado "um" de uma relação um-para-muitos, para navegar de <span class="mono">Categoria</span> até a lista de <span class="mono">Produto</span> associados. <strong>Como funciona:</strong> <span class="mono">mappedBy = "categoria"</span> informa que quem controla o relacionamento é o atributo <span class="mono">categoria</span> lá na classe <span class="mono">Produto</span> — evita que o Hibernate crie uma tabela de junção desnecessária. <span class="mono">cascade = CascadeType.ALL</span> propaga operações (salvar, deletar) da <span class="mono">Categoria</span> para seus produtos; <span class="mono">orphanRemoval = true</span> remove do banco um produto retirado dessa lista em memória.</p>
+        <pre><code class="language-java">@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+private List&lt;Produto&gt; produtos = new ArrayList&lt;&gt;();</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Deletar uma <span class="mono">Categoria</span> com cascade <span class="mono">ALL</span> deleta automaticamente todos os produtos associados a ela — use com cuidado em relações reais de negócio.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Relacionamento N:N (@ManyToMany)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando registros de ambos os lados podem se relacionar livremente — um <span class="mono">Produto</span> pode ter várias <span class="mono">Tag</span>, e uma <span class="mono">Tag</span> pode estar em vários produtos. <strong>Como funciona:</strong> <span class="mono">@JoinTable</span> cria (ou mapeia) uma tabela intermediária com duas colunas de chave estrangeira, uma para cada lado.</p>
+        <pre><code class="language-java">@ManyToMany
+@JoinTable(name = "produto_tag",
+    joinColumns = @JoinColumn(name = "produto_id"),
+    inverseJoinColumns = @JoinColumn(name = "tag_id"))
+private Set&lt;Tag&gt; tags = new HashSet&lt;&gt;();</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O banco ganha uma tabela <span class="mono">produto_tag(produto_id, tag_id)</span>; chamar <span class="mono">produto.getTags()</span> dispara um JOIN implícito via essa tabela intermediária.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Enum mapeado</h3>
+        <p class="theory"><strong>Quando usar:</strong> para campos que representam um conjunto fixo de estados, como o status de um pedido. <strong>Como funciona:</strong> <span class="mono">EnumType.STRING</span> instrui o Hibernate a gravar o nome textual da constante (ex: <span class="mono">"ABERTO"</span>) na coluna; a alternativa, <span class="mono">EnumType.ORDINAL</span>, gravaria a posição numérica (0, 1, 2...), que quebra silenciosamente se a ordem dos valores do enum mudar no futuro.</p>
+        <pre><code class="language-java">@Enumerated(EnumType.STRING)
+@Column(nullable = false)
+private StatusPedido status; // ex: ABERTO, PAGO, CANCELADO</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">StatusPedido.ABERTO</span> é salvo no banco como a string <span class="mono">'ABERTO'</span>, legível diretamente numa consulta SQL manual — diferente do frágil <span class="mono">'0'</span> que <span class="mono">ORDINAL</span> gravaria.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Callbacks de ciclo de vida</h3>
+        <p class="theory"><strong>Quando usar:</strong> para preencher automaticamente campos de auditoria simples (data de criação/atualização) sem lembrar de setá-los manualmente em cada Service. <strong>Como funciona:</strong> o Hibernate invoca esses métodos nos momentos certos do ciclo de vida da entidade — <span class="mono">@PrePersist</span> logo antes do primeiro <span class="mono">INSERT</span>, <span class="mono">@PreUpdate</span> logo antes de qualquer <span class="mono">UPDATE</span> subsequente.</p>
+        <pre><code class="language-java">@PrePersist
+public void aoCriar() { this.criadoEm = LocalDateTime.now(); }
+
+@PreUpdate
+public void aoAtualizar() { this.atualizadoEm = LocalDateTime.now(); }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Ao chamar <span class="mono">produtoRepository.save(novoProduto)</span> pela primeira vez, <span class="mono">criadoEm</span> é preenchido automaticamente com o instante atual, sem que o <span class="mono">ProdutoService</span> precise fazer isso.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Nunca exponha a Entity direto na API — use sempre um DTO (evita acoplamento e vazamento de dados).</li>
+        <li>Prefira <span class="mono">FetchType.LAZY</span> por padrão; use EAGER só quando necessário.</li>
+        <li>Cuidado com <span class="mono">equals()/hashCode()</span> em Entities com relacionamentos — prefira basear só no <span class="mono">id</span>.</li>
+        <li>Use <span class="mono">BigDecimal</span> para valores monetários, nunca <span class="mono">double/float</span>.</li>
+        <li>Em produção, gerencie o schema com Flyway/Liquibase — nunca <span class="mono">ddl-auto=update</span>.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== REPOSITORY ===================== -->
+    <section class="topic" id="repository">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-repository)">Repository</span>
+        <h2>Acesso a dados (Spring Data JPA)</h2>
+      </div>
+      <p class="topic-desc">Interfaces que o Spring implementa automaticamente. Sem SQL manual na maioria dos casos. Toda a seção gira em torno de <span class="mono">ProdutoRepository</span>, injetado diretamente no <span class="mono">ProdutoService</span>.</p>
+
+      <div class="card">
+        <h3>Interface base</h3>
+        <p class="theory"><strong>Quando usar:</strong> é o ponto de partida da camada de persistência — uma interface para cada Entity que precisa de acesso a dados. <strong>Como funciona:</strong> ao estender <span class="mono">JpaRepository&lt;Produto, Long&gt;</span>, o Spring Data JPA gera automaticamente, em tempo de execução, uma implementação com métodos prontos (<span class="mono">save</span>, <span class="mono">findById</span>, <span class="mono">findAll</span>, <span class="mono">deleteById</span>, <span class="mono">count</span>...) — você nunca escreve essa implementação. <strong>Relacionado a:</strong> injetada diretamente no <span class="mono">ProdutoService</span> via construtor (seção Service).</p>
+        <pre><code class="language-java">public interface ProdutoRepository extends JpaRepository&lt;Produto, Long&gt; {
+    //                                        ^ Entity        ^ tipo do id
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Sem escrever nenhum código de implementação, <span class="mono">produtoRepository.save(produto)</span> já executa um <span class="mono">INSERT</span> ou <span class="mono">UPDATE</span>, e <span class="mono">findById(5L)</span> já executa um <span class="mono">SELECT ... WHERE id = 5</span>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Query methods (nome do método vira SQL)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para consultas simples e específicas, sem precisar escrever SQL/JPQL manualmente. <strong>Como funciona:</strong> o Spring Data JPA interpreta o nome do método em tempo de inicialização (convenção <span class="mono">findBy</span> + atributo + operador opcional) e gera a query correspondente automaticamente.</p>
+        <pre><code class="language-java">List&lt;Produto&gt; findByNomeContainingIgnoreCase(String nome); // LIKE %nome%
+List&lt;Produto&gt; findByPrecoLessThanEqual(BigDecimal preco);   // preco &lt;= ?
+boolean existsByNome(String nome);
+long countByQuantidadeEstoque(Integer quantidade);
+List&lt;Produto&gt; findTop5ByOrderByPrecoDesc();</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Chamar <span class="mono">findByNomeContainingIgnoreCase("mouse")</span> executa o equivalente a <span class="mono">SELECT * FROM produtos WHERE UPPER(nome) LIKE UPPER('%mouse%')</span> e devolve a lista correspondente — vazia, se nada for encontrado (nunca <span class="mono">null</span>).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Consulta customizada com @Query (JPQL)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando a lógica da consulta é complexa demais para caber no nome do método (múltiplas condições, agregações). <strong>Como funciona:</strong> a query é escrita em JPQL — parecida com SQL, mas opera sobre entidades e atributos Java (<span class="mono">Produto</span>, <span class="mono">p.preco</span>) em vez de tabelas e colunas; <span class="mono">@Param</span> liga <span class="mono">:min</span>/<span class="mono">:max</span> do JPQL aos parâmetros do método.</p>
+        <pre><code class="language-java">@Query("SELECT p FROM Produto p WHERE p.preco BETWEEN :min AND :max")
+List&lt;Produto&gt; buscarPorFaixaDePreco(@Param("min") BigDecimal min,
+                                     @Param("max") BigDecimal max);</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">buscarPorFaixaDePreco(10, 50)</span> retorna todos os produtos com preço entre 10 e 50 (inclusive), traduzido pelo Hibernate para SQL na hora da execução.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Consulta SQL nativa</h3>
+        <p class="theory"><strong>Quando usar:</strong> para consultas que dependem de recursos específicos do banco que a JPQL não cobre. <strong>Como funciona:</strong> <span class="mono">nativeQuery = true</span> diz ao Spring para executar a string exatamente como SQL puro no banco configurado, sem passar pela tradução JPQL — o retorno ainda é mapeado para objetos <span class="mono">Produto</span> normalmente.</p>
+        <pre><code class="language-java">@Query(value = "SELECT * FROM produtos WHERE estoque = 0", nativeQuery = true)
+List&lt;Produto&gt; buscarSemEstoque();</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">buscarSemEstoque()</span> executa literalmente esse SQL no banco e devolve a lista de <span class="mono">Produto</span> correspondente.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>UPDATE/DELETE customizado</h3>
+        <p class="theory"><strong>Quando usar:</strong> para alterações em massa que não fazem sentido carregar entidade por entidade em memória. <strong>Como funciona:</strong> <span class="mono">@Modifying</span> avisa que essa <span class="mono">@Query</span> altera dados (não é um SELECT); por isso precisa rodar dentro de uma transação explícita (<span class="mono">@Transactional</span>), já que o Hibernate não gerencia esse UPDATE pelo ciclo normal de uma entidade gerenciada.</p>
+        <pre><code class="language-java">@Modifying
+@Transactional
+@Query("UPDATE Produto p SET p.quantidadeEstoque = 0 WHERE p.id = :id")
+void zerarEstoque(@Param("id") Long id);</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">zerarEstoque(10L)</span> executa um <span class="mono">UPDATE produtos SET quantidade_estoque = 0 WHERE id = 10</span> direto no banco, sem buscar o <span class="mono">Produto</span> primeiro.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Paginação nativa</h3>
+        <p class="theory"><strong>Quando usar:</strong> sempre que uma query personalizada também precisar de paginação, não só <span class="mono">findAll()</span>. <strong>Como funciona:</strong> basta acrescentar um parâmetro <span class="mono">Pageable</span> e trocar o retorno para <span class="mono">Page&lt;Produto&gt;</span> — o Spring Data JPA gera automaticamente o <span class="mono">LIMIT</span>/<span class="mono">OFFSET</span> e o <span class="mono">COUNT</span> para o total de páginas. <strong>Relacionado a:</strong> chamado a partir do <span class="mono">ProdutoController</span> (seção Controller, card "Paginação com Pageable").</p>
+        <pre><code class="language-java">Page&lt;Produto&gt; findByNomeContainingIgnoreCase(String nome, Pageable pageable);</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Devolve só a fatia de resultados pedida, mais metadados como <span class="mono">totalElements</span> — sem carregar a tabela inteira em memória.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Repository deve ser "burro": só consulta dados, nunca contém regra de negócio.</li>
+        <li>Prefira query methods para casos simples; @Query para casos complexos.</li>
+        <li>Use projeções (interfaces ou DTOs) quando não precisar da Entity inteira — melhora performance.</li>
+        <li>Sempre pagine listagens que podem crescer muito.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SERVICE ===================== -->
+    <section class="topic" id="service">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-service)">Service</span>
+        <h2>Regras de negócio</h2>
+      </div>
+      <p class="topic-desc">Orquestra chamadas ao Repository e aplica as regras da aplicação. Não conhece HTTP. Classe central: <span class="mono">ProdutoService</span>, chamada pelo <span class="mono">ProdutoController</span> e consumindo o <span class="mono">ProdutoRepository</span>.</p>
+
+      <div class="card">
+        <h3>Injeção de dependência via construtor</h3>
+        <p class="theory"><strong>Quando usar:</strong> em toda classe <span class="mono">@Service</span>, e de forma geral em qualquer bean do Spring que dependa de outro bean. <strong>Como funciona:</strong> <span class="mono">@RequiredArgsConstructor</span> (Lombok) gera automaticamente um construtor recebendo todo atributo <span class="mono">final</span>; o Spring detecta esse construtor e injeta a implementação de <span class="mono">ProdutoRepository</span> no momento em que cria o bean — sem precisar de <span class="mono">@Autowired</span> explícito.</p>
+        <pre><code class="language-java">@Service
+@RequiredArgsConstructor
+public class ProdutoService {
+    private final ProdutoRepository repository; // nunca @Autowired em campo
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Ao subir a aplicação, o Spring instancia um único <span class="mono">ProdutoService</span> (escopo singleton por padrão) já com o repositório pronto; em testes unitários, esse mesmo construtor permite passar um mock manualmente (seção Testes).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Transação de escrita</h3>
+        <p class="theory"><strong>Quando usar:</strong> em qualquer método que grave, altere ou remova dados. <strong>Como funciona:</strong> <span class="mono">@Transactional</span> abre uma transação antes do método rodar e só faz commit se ele terminar sem lançar exceção; se algo falhar no meio do caminho, o Spring desfaz (rollback) tudo automaticamente, evitando dados parcialmente salvos.</p>
+        <pre><code class="language-java">@Transactional
+public ProdutoDTO criar(ProdutoRequestDTO dto) {
+    Produto salvo = repository.save(toEntity(dto));
+    return ProdutoDTO.fromEntity(salvo);
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Se <span class="mono">repository.save(...)</span> lançar uma exceção, nenhuma linha é gravada — tudo ou nada. Em caso de sucesso, devolve o <span class="mono">ProdutoDTO</span> já com o id gerado pelo banco.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Transação de leitura (otimizada)</h3>
+        <p class="theory"><strong>Quando usar:</strong> em métodos que só consultam dados, sem alterar nada — a maioria dos métodos de listagem/busca. <strong>Como funciona:</strong> <span class="mono">readOnly = true</span> é uma dica para o Hibernate e o driver do banco otimizarem a transação (ex: pulando verificações de dirty-checking desnecessárias), reduzindo o overhead de uma consulta simples.</p>
+        <pre><code class="language-java">@Transactional(readOnly = true)
+public List&lt;ProdutoDTO&gt; listarTodos() {
+    return repository.findAll().stream().map(ProdutoDTO::fromEntity).toList();
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Devolve a lista completa de <span class="mono">ProdutoDTO</span> convertida a partir das entidades do repositório, sem efeito colateral no banco, mesmo chamado repetidas vezes.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Buscar ou lançar exceção de negócio</h3>
+        <p class="theory"><strong>Quando usar:</strong> sempre que uma operação depende de um recurso que pode não existir — evita duplicar a checagem em vários métodos. <strong>Como funciona:</strong> <span class="mono">findById(id)</span> devolve um <span class="mono">Optional&lt;Produto&gt;</span>; <span class="mono">orElseThrow</span> dispara a <span class="mono">ProdutoNaoEncontradoException</span> customizada (seção Exceções) quando o Optional está vazio, interrompendo o fluxo antes de qualquer outro código rodar. <strong>Relacionado a:</strong> chamado por <span class="mono">buscarPorId</span>, <span class="mono">atualizar</span> e <span class="mono">deletar</span> do próprio <span class="mono">ProdutoService</span>.</p>
+        <pre><code class="language-java">private Produto buscarOuFalhar(Long id) {
+    return repository.findById(id)
+            .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Se o id não existir, a exceção sobe até o <span class="mono">GlobalExceptionHandler</span>, que converte automaticamente em uma resposta HTTP 404 — o restante do método nunca chega a executar.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Toda regra de negócio mora aqui — não no Controller nem no Repository.</li>
+        <li>Service não deve conhecer detalhes HTTP (nada de HttpServletRequest, ResponseEntity aqui).</li>
+        <li>Um Service pode ser reaproveitado por múltiplos Controllers (REST, mensageria, jobs...).</li>
+        <li>Métodos pequenos e com um propósito único facilitam testes unitários com mocks.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== DTO ===================== -->
+    <section class="topic" id="dto">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-dto)">DTO</span>
+        <h2>Data Transfer Object</h2>
+      </div>
+      <p class="topic-desc">Desacopla o contrato da API (o que trafega) do modelo interno do banco. Usados pelo <span class="mono">ProdutoController</span> como tipo de entrada/saída, convertidos de/para <span class="mono">Produto</span> (Entity) dentro do <span class="mono">ProdutoService</span>.</p>
+
+      <div class="card">
+        <h3>DTO de requisição (record)</h3>
+        <p class="theory"><strong>Quando usar:</strong> como tipo do parâmetro <span class="mono">@RequestBody</span> em endpoints POST/PUT — representa exatamente os campos que o cliente pode enviar. <strong>Como funciona:</strong> por ser um <span class="mono">record</span>, o Java gera automaticamente construtor, getters (<span class="mono">nome()</span>, <span class="mono">preco()</span>...), <span class="mono">equals</span>/<span class="mono">hashCode</span> e um objeto imutável; as anotações de Bean Validation (seção Validação) ficam direto nos parâmetros e são checadas quando o Controller usa <span class="mono">@Valid</span>.</p>
+        <pre><code class="language-java">public record ProdutoRequestDTO(
+        @NotBlank String nome,
+        @NotNull @PositiveOrZero BigDecimal preco) {}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Um JSON <span class="mono">{"nome":"Mouse","preco":59.9}</span> é desserializado pelo Jackson em <span class="mono">new ProdutoRequestDTO("Mouse", new BigDecimal("59.9"))</span>; um <span class="mono">preco</span> negativo faz a validação falhar antes de qualquer código do Controller rodar.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>DTO de resposta + mapeamento</h3>
+        <p class="theory"><strong>Quando usar:</strong> como tipo de retorno de qualquer endpoint que devolve dados de um <span class="mono">Produto</span> ao cliente. <strong>Como funciona:</strong> <span class="mono">fromEntity(Produto p)</span> é um método estático de fábrica que centraliza, em um único lugar, a conversão de <span class="mono">Produto</span> (Entity) para <span class="mono">ProdutoDTO</span> (contrato público) — evita repetir esse mapeamento campo a campo em vários pontos do código. <strong>Relacionado a:</strong> chamado pelo <span class="mono">ProdutoService</span> em todos os métodos que retornam dados.</p>
+        <pre><code class="language-java">public record ProdutoDTO(Long id, String nome, BigDecimal preco) {
+    public static ProdutoDTO fromEntity(Produto p) {
+        return new ProdutoDTO(p.getId(), p.getNome(), p.getPreco());
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O Controller nunca vê um objeto <span class="mono">Produto</span>, só <span class="mono">ProdutoDTO</span>, serializado pelo Jackson como <span class="mono">{"id":1,"nome":"Mouse","preco":59.90}</span>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>DTO → Entity (na criação)</h3>
+        <p class="theory"><strong>Quando usar:</strong> no caminho inverso, ao transformar o que o cliente enviou em algo que o <span class="mono">ProdutoRepository</span> sabe persistir. <strong>Como funciona:</strong> lê os campos do <span class="mono">ProdutoRequestDTO</span> e monta um novo <span class="mono">Produto</span> via builder (gerado pelo Lombok <span class="mono">@Builder</span> na Entity), deliberadamente sem setar <span class="mono">id</span> ou <span class="mono">criadoEm</span> — esses campos ficam sob controle exclusivo do servidor/banco.</p>
+        <pre><code class="language-java">private Produto toEntity(ProdutoRequestDTO dto) {
+    return Produto.builder().nome(dto.nome()).preco(dto.preco()).build();
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Chamado dentro de <span class="mono">ProdutoService.criar(dto)</span>; o <span class="mono">Produto</span> resultante, ainda sem id, é passado para <span class="mono">repository.save(...)</span>, que devolve a mesma entidade já com o id preenchido pelo banco.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Nunca use a Entity como corpo de request/response — sempre um DTO dedicado.</li>
+        <li>DTOs de entrada e saída podem (e costumam) ser diferentes.</li>
+        <li>Prefira <span class="mono">record</span> a classes tradicionais: menos código, imutabilidade de graça.</li>
+        <li>Em projetos maiores, considere MapStruct para gerar o mapeamento automaticamente.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== VALIDAÇÃO ===================== -->
+    <section class="topic" id="validacao">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-validacao)">Validação</span>
+        <h2>Bean Validation</h2>
+      </div>
+      <p class="topic-desc">Valida os dados de entrada antes de qualquer regra de negócio rodar. Atua sobre os DTOs de requisição (seção DTO) usados pelo <span class="mono">ProdutoController</span>.</p>
+
+      <div class="card">
+        <h3>Anotações mais usadas</h3>
+        <p class="theory"><strong>Quando usar:</strong> direto nos parâmetros de um DTO sempre que aquele campo tiver uma regra de formato a garantir antes de qualquer lógica de negócio. <strong>Como funciona:</strong> cada anotação é lida pelo Hibernate Validator (implementação padrão do Bean Validation) quando o Spring processa um <span class="mono">@Valid</span> — nenhuma faz algo sozinha; é a combinação com <span class="mono">@Valid</span> no Controller que dispara a checagem.</p>
+        <pre><code class="language-java">@NotNull            // não pode ser null
+@NotBlank           // string: não pode ser null, vazia ou só espaços
+@Size(min=3,max=50) // tamanho mínimo/máximo
+@Email              // formato de e-mail válido
+@Positive           // número > 0
+@Past / @Future     // data no passado/futuro</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Um <span class="mono">@NotBlank String nome</span> recebendo <span class="mono">""</span> ou campo ausente no JSON falha a validação; um campo dentro das regras segue o fluxo normal, sem efeito visível.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Ativando a validação no Controller</h3>
+        <p class="theory"><strong>Quando usar:</strong> em todo método de Controller que recebe um DTO via <span class="mono">@RequestBody</span> e precisa garantir que os dados cheguem válidos ao Service. <strong>Como funciona:</strong> <span class="mono">@Valid</span> é o gatilho — sem ele, as anotações do <span class="mono">ProdutoRequestDTO</span> existem na classe mas são silenciosamente ignoradas pelo Spring.</p>
+        <pre><code class="language-java">@PostMapping
+public ResponseEntity&lt;ProdutoDTO&gt; criar(@Valid @RequestBody ProdutoRequestDTO dto) { ... }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Uma requisição com dado inválido nunca chega a executar o corpo do método: o Spring intercepta antes, lança <span class="mono">MethodArgumentNotValidException</span> e devolve <span class="mono">400 Bad Request</span> automaticamente (ver seção Exceções para customizar essa resposta).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Validando @PathVariable / @RequestParam</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando o dado a validar não vem de um DTO no corpo, mas direto da URL — como um id que deveria ser sempre positivo. <strong>Como funciona:</strong> diferente de <span class="mono">@Valid</span> (usado em objetos complexos), <span class="mono">@Positive</span> aqui valida um valor simples; mas só funciona se a classe inteira do Controller estiver marcada com <span class="mono">@Validated</span> — sem isso, o Spring ignora validações em parâmetros soltos.</p>
+        <pre><code class="language-java">@RestController
+@Validated
+public class ProdutoController {
+    @GetMapping("/{id}")
+    public ProdutoDTO buscar(@PathVariable @Positive Long id) { ... }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">GET /api/produtos/-5</span> é rejeitado com <span class="mono">400 Bad Request</span> antes de chamar o Service, pois -5 viola <span class="mono">@Positive</span>; <span class="mono">GET /api/produtos/5</span> segue o fluxo normal.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Sempre valide dados vindos de fora (corpo, query params, headers) — nunca confie no cliente.</li>
+        <li>Use mensagens customizadas e claras: <span class="mono">@NotBlank(message = "nome é obrigatório")</span>.</li>
+        <li>Combine validação de formato (Bean Validation) com validação de negócio (no Service).</li>
+      </ul>
+    </section>
+
+    <!-- ===================== EXCEÇÕES ===================== -->
+    <section class="topic" id="excecoes">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-excecoes)">Exceções</span>
+        <h2>Tratamento global de erros</h2>
+      </div>
+      <p class="topic-desc">Centraliza o tratamento de erros em vez de duplicar try/catch em cada Controller. As exceções geralmente nascem no <span class="mono">ProdutoService</span> e são capturadas por uma única classe: <span class="mono">GlobalExceptionHandler</span>.</p>
+
+      <div class="card">
+        <h3>Exceção de negócio customizada</h3>
+        <p class="theory"><strong>Quando usar:</strong> para representar um erro específico do seu domínio (produto não encontrado, saldo insuficiente...), mais expressivo do que lançar uma <span class="mono">RuntimeException</span> genérica. <strong>Como funciona:</strong> estende <span class="mono">RuntimeException</span> (exceção não verificada — não obriga <span class="mono">throws</span> na assinatura dos métodos). <strong>Relacionado a:</strong> lançada pelo <span class="mono">ProdutoService</span> (seção Service, card "Buscar ou lançar exceção") sempre que um id não é encontrado.</p>
+        <pre><code class="language-java">public class ProdutoNaoEncontradoException extends RuntimeException {
+    public ProdutoNaoEncontradoException(Long id) {
+        super("Produto não encontrado: " + id);
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">new ProdutoNaoEncontradoException(99L)</span> cria uma exceção com a mensagem "Produto não encontrado: 99", pronta para ser capturada pelo handler global abaixo.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>DTO de erro (ErroDTO)</h3>
+        <p class="theory"><strong>Quando usar:</strong> como corpo de resposta padronizado sempre que o <span class="mono">GlobalExceptionHandler</span> precisa devolver um erro em JSON — é a versão simples de resposta de erro, alternativa ao <span class="mono">ProblemDetail</span> já embutido no Spring (ver último card desta seção). <strong>Como funciona:</strong> é só um <span class="mono">record</span> com um campo <span class="mono">mensagem</span> — a mesma ideia do <span class="mono">ProdutoDTO</span> (seção DTO), só que para representar erros em vez de produtos; por ser um record, o Jackson serializa automaticamente para JSON, sem nenhuma configuração extra. <strong>Relacionado a:</strong> usado como tipo de retorno pelos métodos <span class="mono">@ExceptionHandler</span> do <span class="mono">GlobalExceptionHandler</span> — aparece nos dois cards seguintes, "Handler global" e "Tratando erros de validação".</p>
+        <pre><code class="language-java">public record ErroDTO(String mensagem) {}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">new ErroDTO("Produto não encontrado: 99")</span> é serializado pelo Jackson como <span class="mono">{"mensagem":"Produto não encontrado: 99"}</span> no corpo da resposta HTTP.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Handler global</h3>
+        <p class="theory"><strong>Quando usar:</strong> uma única vez por aplicação — é o ponto central que converte exceções Java em respostas HTTP consistentes. <strong>Como funciona:</strong> <span class="mono">@RestControllerAdvice</span> registra a classe como interceptador global; quando uma exceção do tipo declarado sobe sem ser capturada em nenhum lugar (geralmente lançada dentro de um Service), o método anotado com <span class="mono">@ExceptionHandler</span> correspondente é chamado automaticamente. <strong>Relacionado a:</strong> intercepta exceções vindas de qualquer Controller/Service da aplicação, incluindo <span class="mono">ProdutoNaoEncontradoException</span>.</p>
+        <pre><code class="language-java">@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ProdutoNaoEncontradoException.class)
+    public ResponseEntity&lt;ErroDTO&gt; tratar(ProdutoNaoEncontradoException ex) {
+        return ResponseEntity.status(404).body(new ErroDTO(ex.getMessage()));
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Uma <span class="mono">ProdutoNaoEncontradoException</span> lançada em qualquer Service vira, para o cliente, uma resposta <span class="mono">404</span> com corpo <span class="mono">{"mensagem":"Produto não encontrado: 99"}</span> — sem que o <span class="mono">ProdutoController</span> precise saber que isso aconteceu.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Tratando erros de validação (@Valid)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para customizar a resposta que o Spring já devolve automaticamente ao falhar um <span class="mono">@Valid</span> (seção Validação), em vez de aceitar o formato padrão pouco amigável do framework. <strong>Como funciona:</strong> <span class="mono">MethodArgumentNotValidException</span> carrega, em <span class="mono">getBindingResult()</span>, a lista de campos que falharam e suas mensagens — aqui pegamos apenas a primeira; é comum agregar todas em uma lista.</p>
+        <pre><code class="language-java">@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity&lt;ErroDTO&gt; tratarValidacao(MethodArgumentNotValidException ex) {
+    String msg = ex.getBindingResult().getFieldError().getDefaultMessage();
+    return ResponseEntity.badRequest().body(new ErroDTO(msg)); // 400
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Um POST com <span class="mono">nome</span> ausente devolve <span class="mono">400 Bad Request</span> com corpo <span class="mono">{"mensagem":"nome é obrigatório"}</span> (ou a mensagem customizada da anotação do DTO).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Atalho rápido: ResponseStatusException</h3>
+        <p class="theory"><strong>Quando usar:</strong> para um erro pontual, específico de um único endpoint, que não justifica criar uma classe de exceção nova nem um handler dedicado. <strong>Como funciona:</strong> pode ser lançada direto de dentro de um método de Controller ou Service; o Spring já sabe convertê-la automaticamente na resposta HTTP correspondente.</p>
+        <pre><code class="language-java">throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O cliente recebe <span class="mono">404 Not Found</span> com a mensagem no corpo — mesmo resultado prático do handler customizado, mas sem exigir uma classe de exceção própria.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Padrão atual: ProblemDetail (RFC 9457)</h3>
+        <p class="theory"><strong>Quando usar:</strong> em projetos novos, no lugar de criar um <span class="mono">ErroDTO</span> próprio do zero. <strong>Como funciona:</strong> desde o Spring Framework 6 / Spring Boot 3, existe um formato de erro padronizado embutido, implementando a RFC 9457 (Problem Details for HTTP APIs) — <span class="mono">ProblemDetail.forStatusAndDetail(...)</span> monta o objeto de resposta pronto, com título, status e detalhe.</p>
+        <pre><code class="language-properties"># habilita o formato padrão em toda a aplicação
+spring.mvc.problemdetails.enabled=true</code></pre>
+        <pre><code class="language-java">@ExceptionHandler(ProdutoNaoEncontradoException.class)
+public ProblemDetail tratar(ProdutoNaoEncontradoException ex) {
+    ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND, ex.getMessage());
+    problema.setTitle("Produto não encontrado");
+    return problema; // Content-Type: application/problem+json
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Resposta <span class="mono">404</span> com <span class="mono">Content-Type: application/problem+json</span> e corpo <span class="mono">{"type":"about:blank","title":"Produto não encontrado","status":404,"detail":"Produto não encontrado: 99","instance":"/api/produtos/99"}</span> — um formato já padronizado entre diferentes APIs.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Nunca deixe stack trace vazar para o cliente — sempre uma resposta JSON padronizada.</li>
+        <li>Tenha um handler "genérico" (Exception.class) como rede de segurança, devolvendo 500.</li>
+        <li>Em projetos novos, prefira <span class="mono">ProblemDetail</span> (padrão RFC 9457, já embutido) a um DTO de erro próprio — só crie um formato customizado se o time tiver um motivo específico.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== CONFIGURAÇÃO ===================== -->
+    <section class="topic" id="configuracao">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-config)">Configuração</span>
+        <h2>application.properties &amp; profiles</h2>
+      </div>
+      <p class="topic-desc">Centraliza configurações da aplicação, separadas por ambiente. Afeta diretamente como o <span class="mono">ProdutoRepository</span> se conecta ao banco e como o Hibernate trata o schema das Entities.</p>
+
+      <div class="card">
+        <h3>Configurações essenciais</h3>
+        <p class="theory"><strong>Quando usar:</strong> em todo projeto Spring Boot — é o arquivo padrão lido automaticamente ao subir a aplicação. <strong>Como funciona:</strong> cada propriedade configura uma parte específica do framework; <span class="mono">spring.datasource.*</span> configura a conexão JDBC usada por baixo dos panos pelo <span class="mono">ProdutoRepository</span>, e <span class="mono">spring.jpa.hibernate.ddl-auto=validate</span> instrui o Hibernate a apenas conferir se as classes <span class="mono">@Entity</span> (seção Entity) batem com as tabelas existentes, sem alterar nada.</p>
+        <pre><code class="language-properties">server.port=8080
+spring.datasource.url=jdbc:postgresql://localhost:5432/meudb
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Ao iniciar, os logs mostram a URL de conexão usada e, com <span class="mono">show-sql=true</span>, cada SQL gerado pelo Hibernate aparece no console — útil para conferir se uma query saiu como esperado.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Profiles (dev, prod...)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para ter configurações diferentes por ambiente (desenvolvimento, teste, produção) sem duplicar código. <strong>Como funciona:</strong> um arquivo <span class="mono">application-dev.properties</span> só é carregado quando o profile <span class="mono">dev</span> está ativo; suas propriedades sobrescrevem (ou complementam) as do <span class="mono">application.properties</span> padrão.</p>
+        <pre><code class="language-properties"># application-dev.properties
+spring.jpa.hibernate.ddl-auto=update
+
+# ativar via linha de comando:
+# java -jar app.jar --spring.profiles.active=dev</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Rodando com <span class="mono">--spring.profiles.active=dev</span>, a aplicação usa <span class="mono">ddl-auto=update</span> (conveniente para desenvolvimento); sem esse profile, vale o <span class="mono">validate</span> mais restrito do arquivo padrão.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Lendo configurações customizadas</h3>
+        <p class="theory"><strong>Quando usar:</strong> para trazer valores definidos no properties para dentro do código Java, em vez de hardcodar strings/números espalhados pelas classes. <strong>Como funciona:</strong> <span class="mono">@Value</span> injeta uma única propriedade por vez, lida por nome; <span class="mono">@ConfigurationProperties(prefix = "app")</span> faz o mesmo de forma agrupada, populando automaticamente um record inteiro a partir de todas as propriedades que começam com <span class="mono">app.</span> — mais organizado quando são várias.</p>
+        <pre><code class="language-java">@Value("${app.nome-empresa}")
+private String nomeEmpresa;
+
+// ou agrupando várias propriedades:
+@ConfigurationProperties(prefix = "app")
+public record AppProperties(String nomeEmpresa, int limitePagina) {}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Com <span class="mono">app.nome-empresa=Acme</span> no properties, <span class="mono">nomeEmpresa</span> chega preenchido com "Acme" assim que o bean é criado, sem código adicional de leitura de arquivo.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Segredos (senha de banco, chave JWT) sempre via variável de ambiente, nunca no código.</li>
+        <li><span class="mono">ddl-auto=update</span> só em desenvolvimento — em produção use Flyway/Liquibase.</li>
+        <li>Um profile por ambiente (dev, test, prod) evita configuração condicional espalhada no código.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== MIGRATIONS ===================== -->
+    <section class="topic" id="migrations">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-migrations)">Migrations</span>
+        <h2>Versionamento de schema (Flyway)</h2>
+      </div>
+      <p class="topic-desc">Controla e versiona as alterações da estrutura do banco, em vez de deixar o Hibernate criar/alterar tabelas sozinho. Garante que o schema real bata com o que as classes <span class="mono">@Entity</span> esperam.</p>
+
+      <div class="card">
+        <h3>Dependência</h3>
+        <p class="theory"><strong>Quando usar:</strong> em qualquer projeto que use um banco real (não o H2 em memória) e precise de controle confiável sobre mudanças de schema em produção. <strong>Como funciona:</strong> o Flyway se registra como um listener que roda automaticamente antes da aplicação Spring Boot terminar de subir, checando o banco configurado em <span class="mono">spring.datasource.*</span> e aplicando qualquer migration pendente.</p>
+        <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
+    &lt;artifactId&gt;flyway-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Nenhum código Java adicional é necessário — a partir do próximo restart da aplicação, o Flyway já entra em ação automaticamente.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Estrutura de arquivos</h3>
+        <p class="theory"><strong>Quando usar:</strong> sempre — é a convenção de nomenclatura que o Flyway espera para localizar e ordenar as migrations. <strong>Como funciona:</strong> o prefixo <span class="mono">V1</span>, <span class="mono">V2</span>, <span class="mono">V3</span>... define a ordem de execução; o Flyway mantém uma tabela de controle no próprio banco (<span class="mono">flyway_schema_history</span>) registrando quais versões já rodaram, para nunca reexecutar a mesma migration duas vezes.</p>
+        <pre><code class="language-text">src/main/resources/db/migration/
+├── V1__criar_tabela_produtos.sql
+├── V2__adicionar_coluna_estoque.sql
+└── V3__criar_tabela_categorias.sql</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Na primeira execução, o Flyway roda V1, V2 e V3 em ordem e grava cada uma em <span class="mono">flyway_schema_history</span>; em execuções seguintes, pula direto para qualquer versão nova adicionada depois da última já aplicada.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Exemplo de migration</h3>
+        <p class="theory"><strong>Quando usar:</strong> um arquivo <span class="mono">.sql</span> por mudança de schema (criar tabela, adicionar coluna...) — nunca edite um já aplicado. <strong>Como funciona:</strong> o conteúdo é SQL puro, específico do banco usado; o Flyway apenas executa o arquivo como está, sem interpretar nem traduzir nada. <strong>Relacionado a:</strong> a estrutura resultante deve bater exatamente com o que a classe <span class="mono">Produto</span> (seção Entity) espera encontrar.</p>
+        <pre><code class="language-sql">-- V1__criar_tabela_produtos.sql
+CREATE TABLE produtos (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(120) NOT NULL,
+    preco NUMERIC(10,2) NOT NULL
+);</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Rodar essa migration cria a tabela <span class="mono">produtos</span> no banco configurado, pronta para o <span class="mono">ProdutoRepository</span> operar sobre ela.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Configuração</h3>
+        <p class="theory"><strong>Quando usar:</strong> junto com a dependência do Flyway, para desligar a criação automática de tabelas do Hibernate. <strong>Como funciona:</strong> com o Flyway ativo, o Hibernate passa a apenas validar (<span class="mono">ddl-auto=validate</span>) se o schema bate com as Entities, nunca criar ou alterar tabelas sozinho — quem manda no schema agora são as migrations.</p>
+        <pre><code class="language-properties">spring.flyway.enabled=true
+spring.jpa.hibernate.ddl-auto=validate</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Se a tabela <span class="mono">produtos</span> não tiver, por exemplo, a coluna <span class="mono">preco</span> esperada pela Entity, a aplicação falha ao subir com um erro de validação de schema — sinal de que falta criar uma migration.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Nunca edite uma migration já aplicada em produção — crie sempre uma nova.</li>
+        <li>Nomeie os arquivos em ordem crescente: V1, V2, V3... o Flyway depende dessa numeração.</li>
+        <li>Rode as migrations automaticamente no startup — evita passos manuais de deploy.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SEGURANÇA ===================== -->
+    <section class="topic" id="seguranca">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-seguranca)">Segurança</span>
+        <h2>Spring Security &amp; JWT</h2>
+      </div>
+      <p class="topic-desc">Autenticação (quem é o usuário) e autorização (o que ele pode fazer). Protege os endpoints expostos por classes como <span class="mono">ProdutoController</span>.</p>
+
+      <div class="card">
+        <h3>Cadeia de segurança básica</h3>
+        <p class="theory"><strong>Quando usar:</strong> uma vez por aplicação — é a configuração central que decide quais endpoints exigem autenticação. <strong>Como funciona:</strong> <span class="mono">csrf().disable()</span> remove uma proteção pensada para formulários web com cookies (desnecessária numa API stateless com token); <span class="mono">sessionCreationPolicy(STATELESS)</span> impede o Spring de criar sessão HTTP; <span class="mono">authorizeHttpRequests</span> define regras avaliadas em ordem — aqui, tudo em <span class="mono">/api/auth/**</span> é público, e qualquer outra rota exige autenticação.</p>
+        <pre><code class="language-java">@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(c -> c.disable())
+        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .anyRequest().authenticated());
+    return http.build();
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Uma requisição para <span class="mono">/api/produtos</span> sem token válido é barrada pelo próprio Spring Security antes de chegar ao <span class="mono">ProdutoController</span>, respondendo <span class="mono">401 Unauthorized</span> automaticamente.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Codificação de senha</h3>
+        <p class="theory"><strong>Quando usar:</strong> sempre que uma senha de usuário for salva no banco (cadastro) ou comparada no login. <strong>Como funciona:</strong> BCrypt gera um hash com salt embutido — o mesmo texto produz hashes diferentes a cada chamada de <span class="mono">encode</span>, e a comparação no login é feita via <span class="mono">passwordEncoder.matches(senhaDigitada, hashSalvo)</span>, nunca comparando strings diretamente.</p>
+        <pre><code class="language-java">@Bean
+public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p><span class="mono">encode("123456")</span> produz algo como <span class="mono">$2a$10$N9qo8uLOickgx2ZMRZoMy...</span> — mesmo com acesso ao banco, não é possível recuperar a senha original a partir desse valor.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Restringindo por papel (role)</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando diferentes usuários autenticados devem ter permissões diferentes (ex: só ADMIN pode deletar). <strong>Como funciona:</strong> desde o Spring Security 6, <span class="mono">@PreAuthorize</span> só funciona com <span class="mono">@EnableMethodSecurity</span> habilitado em alguma classe <span class="mono">@Configuration</span> — antes disso, era <span class="mono">@EnableGlobalMethodSecurity</span> (anotação antiga, evite em projetos novos).</p>
+        <pre><code class="language-java">@Configuration
+@EnableMethodSecurity // habilita @PreAuthorize/@PostAuthorize na aplicação
+public class MethodSecurityConfig { }</code></pre>
+        <pre><code class="language-java">@PreAuthorize("hasRole('ADMIN')")
+@DeleteMapping("/{id}")
+public void deletar(@PathVariable Long id) { ... }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Um usuário autenticado sem o papel ADMIN recebe <span class="mono">403 Forbidden</span> ao chamar <span class="mono">DELETE /api/produtos/5</span>, mesmo estando logado — diferente do <span class="mono">401</span> (não autenticado) do card anterior.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Fluxo JWT (resumo)</h3>
+        <p class="theory"><strong>Quando usar:</strong> como estratégia de autenticação padrão em APIs REST stateless. <strong>Como funciona:</strong> o cliente faz login uma vez e reutiliza o token — nenhuma sessão fica guardada no servidor; um filtro customizado (<span class="mono">OncePerRequestFilter</span>) intercepta cada requisição para validar o token antes de qualquer Controller ser chamado.</p>
+        <pre><code class="language-text">1. POST /api/auth/login (email + senha) → servidor gera um JWT
+2. Cliente guarda o token e envia em cada chamada:
+   Authorization: Bearer &lt;token&gt;
+3. Um filtro (OncePerRequestFilter) valida o token a cada requisição</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Enquanto o token não expirar, o cliente não precisa fazer login de novo a cada requisição — basta reenviar o mesmo header <span class="mono">Authorization</span>.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>APIs REST devem ser <em>stateless</em>: nada de sessão em memória no servidor.</li>
+        <li>Tokens JWT devem ter tempo de expiração curto.</li>
+        <li>Chave de assinatura do JWT nunca deve ir para o repositório de código.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== CORS ===================== -->
+    <section class="topic" id="cors">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-cors)">CORS</span>
+        <h2>Cross-Origin Resource Sharing</h2>
+      </div>
+      <p class="topic-desc">Necessário quando o front-end roda em outro domínio/porta da API (ex: React em localhost:3000 chamando a API em localhost:8080).</p>
+
+      <div class="card">
+        <h3>Configuração global</h3>
+        <p class="theory"><strong>Quando usar:</strong> quando toda (ou a maior parte) da API precisa ser acessível por um front-end em outra origem. <strong>Como funciona:</strong> essa configuração intercepta o cabeçalho <span class="mono">Origin</span> de cada requisição recebida em <span class="mono">/api/**</span>; se a origem bater com <span class="mono">allowedOrigins</span>, o Spring adiciona os headers <span class="mono">Access-Control-Allow-*</span> na resposta, autorizando o navegador do cliente a aceitar os dados.</p>
+        <pre><code class="language-java">@Bean
+public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/api/**")
+                    .allowedOrigins("http://localhost:3000")
+                    .allowedMethods("GET","POST","PUT","DELETE");
+        }
+    };
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Uma chamada via <span class="mono">fetch()</span> a partir de <span class="mono">http://localhost:3000</span> para <span class="mono">GET /api/produtos</span> funciona normalmente no navegador; a mesma chamada de outra origem não listada é bloqueada pelo próprio navegador.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>CORS em um único Controller</h3>
+        <p class="theory"><strong>Quando usar:</strong> útil para liberar apenas um recurso específico, sem afetar o restante da API. <strong>Como funciona:</strong> <span class="mono">@CrossOrigin</span> sobrescreve, só para essa classe, as regras de CORS que valeriam globalmente.</p>
+        <pre><code class="language-java">@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/produtos")
+public class ProdutoController { ... }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Libera CORS apenas para as rotas de <span class="mono">ProdutoController</span>, mesmo que o restante da API não tenha CORS configurado globalmente.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>CORS junto com Spring Security</h3>
+        <p class="theory"><strong>Quando usar:</strong> sempre que o Spring Security estiver ativo (seção Segurança) e a API também precisar de CORS. <strong>Como funciona:</strong> <span class="mono">http.cors(Customizer.withDefaults())</span> na cadeia de segurança faz o Spring Security respeitar a configuração de CORS já definida separadamente (via <span class="mono">WebMvcConfigurer</span> ou <span class="mono">@CrossOrigin</span>), em vez de bloquear a requisição antes mesmo dela chegar lá.</p>
+        <pre><code class="language-java">http.cors(Customizer.withDefaults())
+    .csrf(c -> c.disable());</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Sem essa linha, o Spring Security bloquearia a requisição antes de aplicar as regras de CORS configuradas separadamente, mesmo com a origem liberada.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Nunca use <span class="mono">allowedOrigins("*")</span> em produção junto com credenciais habilitadas.</li>
+        <li>Libere apenas os domínios reais do front-end (dev, staging, produção) — nunca um curinga solto.</li>
+        <li>CORS é aplicado pelo navegador: não substitui autenticação/autorização no servidor.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== TESTES ===================== -->
+    <section class="topic" id="testes">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-testes)">Testes</span>
+        <h2>Testes automatizados</h2>
+      </div>
+      <p class="topic-desc">Garantem que o comportamento esperado continue funcionando conforme o código muda. Os três níveis abaixo testam, respectivamente, o <span class="mono">ProdutoService</span> isolado, o <span class="mono">ProdutoController</span> isolado, e a aplicação inteira.</p>
+
+      <div class="card">
+        <h3>Teste unitário do Service (Mockito)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para testar regras de negócio isoladamente, com feedback rápido. <strong>Como funciona:</strong> <span class="mono">@Mock</span> cria um dublê de <span class="mono">ProdutoRepository</span> que não conversa com banco real; <span class="mono">@InjectMocks</span> instancia o <span class="mono">ProdutoService</span> de verdade, injetando esse mock automaticamente; <span class="mono">when(...).thenReturn(...)</span> programa o comportamento do mock para o cenário do teste.</p>
+        <pre><code class="language-java">@ExtendWith(MockitoExtension.class)
+class ProdutoServiceTest {
+    @Mock ProdutoRepository repository;
+    @InjectMocks ProdutoService service;
+
+    @Test
+    void deveLancarExcecaoSeNaoEncontrar() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ProdutoNaoEncontradoException.class, () -> service.buscarPorId(1L));
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Roda em milissegundos, sem abrir conexão com banco nem subir o Spring; falha caso <span class="mono">buscarPorId</span> não lance a exceção esperada quando o produto não existe.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Teste da camada web (@WebMvcTest)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para testar o comportamento HTTP do Controller (status code, formato JSON) sem depender do Service real. <strong>Como funciona:</strong> <span class="mono">@WebMvcTest(ProdutoController.class)</span> sobe só essa fatia da aplicação (roteamento, serialização, validação); <span class="mono">@MockBean</span> substitui <span class="mono">ProdutoService</span> por um mock no contexto do Spring; <span class="mono">MockMvc</span> simula requisições HTTP sem abrir uma porta de rede real.</p>
+        <pre><code class="language-java">@WebMvcTest(ProdutoController.class)
+class ProdutoControllerTest {
+    @Autowired MockMvc mockMvc;
+    @MockBean ProdutoService service;
+
+    @Test
+    void deveRetornar404() throws Exception {
+        mockMvc.perform(get("/api/produtos/99")).andExpect(status().isNotFound());
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O teste falha se o <span class="mono">ProdutoController</span> não devolver exatamente <span class="mono">404</span> para um id inexistente (comportamento simulado pelo mock do Service).</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Teste de integração completo</h3>
+        <p class="theory"><strong>Quando usar:</strong> para validar um cenário real de ponta a ponta, com todas as camadas trabalhando juntas. <strong>Como funciona:</strong> <span class="mono">@SpringBootTest(webEnvironment = RANDOM_PORT)</span> sobe a aplicação inteira numa porta aleatória, incluindo banco (H2 em memória, seção Configuração) e contexto completo do Spring; <span class="mono">TestRestTemplate</span> faz uma chamada HTTP de verdade contra essa instância.</p>
+        <pre><code class="language-java">@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class ProdutoApiIT {
+    @Autowired TestRestTemplate rest;
+
+    @Test
+    void deveCriarProduto() {
+        var resp = rest.postForEntity("/api/produtos", novoProdutoDTO, Object.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Confirma que toda a cadeia — <span class="mono">ProdutoController</span>, <span class="mono">ProdutoService</span>, <span class="mono">ProdutoRepository</span>, banco — funciona junta corretamente, devolvendo <span class="mono">201 Created</span> na criação bem-sucedida.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Teste regras de negócio, não getters/setters gerados pelo Lombok.</li>
+        <li>Prefira muitos testes unitários rápidos (Service) a poucos testes de integração lentos.</li>
+        <li>Nomeie o teste pelo comportamento esperado: <span class="mono">deveRetornar404QuandoProdutoNaoExiste</span>.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== DOCUMENTAÇÃO (SWAGGER/OPENAPI) ===================== -->
+    <section class="topic" id="documentacao">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-docs)">Documentação</span>
+        <h2>Swagger / OpenAPI</h2>
+      </div>
+      <p class="topic-desc">Gera uma documentação interativa da API automaticamente, a partir do próprio código dos Controllers (ex: <span class="mono">ProdutoController</span>).</p>
+
+      <div class="card">
+        <h3>Dependência</h3>
+        <p class="theory"><strong>Quando usar:</strong> em toda API que será consumida por outro time (front-end, mobile, QA) ou por terceiros. <strong>Como funciona:</strong> só de adicionar essa dependência, a biblioteca escaneia automaticamente os <span class="mono">@RestController</span> registrados e gera a especificação OpenAPI e a interface do Swagger UI — sem configuração extra. A versão muda com frequência: springdoc-openapi série 2.x acompanha Spring Boot 3.5.x, série 3.x acompanha Spring Boot 4.x — confira a última tag em <span class="mono">springdoc.org</span> antes de fixar.</p>
+        <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springdoc&lt;/groupId&gt;
+    &lt;artifactId&gt;springdoc-openapi-starter-webmvc-ui&lt;/artifactId&gt;
+    &lt;version&gt;&lt;!-- use a última da série 2.x (Boot 3.5) ou 3.x (Boot 4) --&gt;&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Ao subir a aplicação, os endpoints de <span class="mono">ProdutoController</span> já aparecem automaticamente no Swagger UI, com os parâmetros e tipos de retorno inferidos das assinaturas dos métodos.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Personalizando título e versão</h3>
+        <p class="theory"><strong>Quando usar:</strong> para dar identidade à documentação gerada (nome do projeto, versão da API) em vez de ficar com o título genérico padrão. <strong>Como funciona:</strong> declarar um bean <span class="mono">OpenAPI</span> customizado numa classe <span class="mono">@Configuration</span> (ex: <span class="mono">OpenApiConfig</span>) sobrescreve os metadados exibidos no topo do Swagger UI.</p>
+        <pre><code class="language-java">@Bean
+public OpenAPI apiInfo() {
+    return new OpenAPI().info(new Info()
+            .title("Catálogo API")
+            .version("v1"));
+}</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O Swagger UI passa a exibir "Catálogo API — v1" no cabeçalho da página, em vez do título genérico padrão da biblioteca.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Documentando um endpoint específico</h3>
+        <p class="theory"><strong>Quando usar:</strong> em endpoints mais importantes ou com comportamento não óbvio, que merecem uma descrição além do que o Spring já infere sozinho. <strong>Como funciona:</strong> anotações opcionais colocadas direto no método do Controller (aqui, <span class="mono">ProdutoController.buscar</span>) enriquecem a entrada correspondente na documentação gerada, sem exigir nenhum arquivo separado.</p>
+        <pre><code class="language-java">@Operation(summary = "Busca um produto pelo id")
+@ApiResponse(responseCode = "404", description = "Produto não encontrado")
+@GetMapping("/{id}")
+public ProdutoDTO buscar(@PathVariable Long id) { ... }</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>No Swagger UI, o endpoint <span class="mono">GET /api/produtos/{id}</span> passa a mostrar a descrição "Busca um produto pelo id" e documenta explicitamente a possível resposta 404.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Acessando a documentação</h3>
+        <p class="theory"><strong>Quando usar:</strong> após subir a aplicação localmente ou em qualquer ambiente, para explorar ou testar a API sem precisar do Postman. <strong>Como funciona:</strong> as duas URLs abaixo já ficam disponíveis automaticamente, geradas em tempo real a partir dos Controllers escaneados.</p>
+        <pre><code class="language-text">Swagger UI (interface interativa): /swagger-ui.html
+JSON da especificação OpenAPI:      /v3/api-docs</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Abrir <span class="mono">http://localhost:8080/swagger-ui.html</span> no navegador mostra uma página interativa listando todos os endpoints de <span class="mono">ProdutoController</span>, com botão "Try it out" para executar chamadas reais.</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>A documentação é gerada a partir do código — mantê-lo claro já mantém a doc atualizada.</li>
+        <li>Use <span class="mono">@Operation</span> e <span class="mono">@ApiResponse</span> nos endpoints mais importantes ou não óbvios.</li>
+        <li>Compartilhe a URL do Swagger UI com front-end/mobile/QA como "contrato vivo" da API.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== DOCKER & DEPLOY ===================== -->
+    <section class="topic" id="docker">
+      <div class="topic-head">
+        <span class="badge" style="background:var(--tag-docker)">Docker</span>
+        <h2>Empacotamento e deploy</h2>
+      </div>
+      <p class="topic-desc">Empacota a aplicação com tudo que ela precisa para rodar da mesma forma em qualquer ambiente.</p>
+
+      <div class="card">
+        <h3>Gerar o .jar executável</h3>
+        <p class="theory"><strong>Quando usar:</strong> antes de qualquer build de imagem Docker, ou para rodar a aplicação sem depender de uma IDE. <strong>Como funciona:</strong> o Maven compila o código, roda o build e empacota tudo (incluindo o servidor Tomcat embutido) em um único arquivo <span class="mono">.jar</span> executável.</p>
+        <pre><code class="language-bash">./mvnw clean package -DskipTests</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>Gera <span class="mono">target/nome-do-projeto.jar</span>; rodar <span class="mono">java -jar target/nome-do-projeto.jar</span> já sobe a aplicação completa, sem precisar de um servidor de aplicação separado.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Dockerfile (multi-stage build)</h3>
+        <p class="theory"><strong>Quando usar:</strong> para gerar uma imagem Docker de produção, enxuta e sem ferramentas de build desnecessárias. <strong>Como funciona:</strong> o primeiro estágio (<span class="mono">FROM maven...</span>) compila o projeto usando uma imagem completa com Maven e JDK; o segundo estágio (<span class="mono">FROM eclipse-temurin...jre-alpine</span>) parte de uma imagem bem menor, contendo só o runtime Java, e copia apenas o <span class="mono">.jar</span> já pronto do estágio anterior — o código-fonte e o Maven não vão para a imagem final.</p>
+        <pre><code class="language-dockerfile">FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","app.jar"]</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>A imagem final resultante é significativamente menor do que se tudo fosse feito em um único estágio, e não expõe código-fonte nem ferramentas de build.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Build e execução</h3>
+        <p class="theory"><strong>Quando usar:</strong> para testar a imagem localmente antes de enviar a um registry (Docker Hub, ECR...) ou a um ambiente de produção. <strong>Como funciona:</strong> <span class="mono">docker build</span> lê o <span class="mono">Dockerfile</span> e monta a imagem; <span class="mono">docker run -p 8080:8080</span> mapeia a porta 8080 do container para a porta 8080 da máquina host.</p>
+        <pre><code class="language-bash">docker build -t minha-api .
+docker run -p 8080:8080 minha-api</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>A API fica acessível em <span class="mono">http://localhost:8080</span> a partir da máquina host, rodando isoladamente dentro do container.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Configurando por variável de ambiente</h3>
+        <p class="theory"><strong>Quando usar:</strong> para apontar o mesmo container Docker para bancos/ambientes diferentes, sem reconstruir a imagem. <strong>Como funciona:</strong> o Spring Boot converte automaticamente variáveis de ambiente em maiúsculas com underscore (<span class="mono">SPRING_DATASOURCE_URL</span>) para a propriedade equivalente do <span class="mono">application.properties</span> (<span class="mono">spring.datasource.url</span>), sobrescrevendo o valor definido no arquivo.</p>
+        <pre><code class="language-bash">docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/db \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  minha-api</code></pre>
+        <div class="result-box"><span class="result-label">Resultado esperado</span><p>O mesmo container conecta a um banco PostgreSQL diferente do configurado no <span class="mono">application.properties</span> padrão, e roda com o profile <span class="mono">prod</span> ativo (seção Configuração).</p></div>
+      </div>
+
+      <ul class="practice-list">
+        <li>Use multi-stage build: a imagem final não deve conter Maven nem código-fonte.</li>
+        <li>Nunca coloque senhas/segredos direto no Dockerfile — use variáveis de ambiente.</li>
+        <li>Configure um profile de produção (<span class="mono">spring.profiles.active=prod</span>) separado do de desenvolvimento.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== STATUS HTTP ===================== -->
+    <section class="topic" id="status-http">
+      <div class="topic-head">
+        <span class="badge" style="background:#374151">Referência</span>
+        <h2>Códigos de status HTTP</h2>
+      </div>
+      <p class="topic-desc">Guia rápido de qual status devolver em cada situação — usados nos exemplos de <span class="mono">ProdutoController</span> ao longo desta página.</p>
+
+      <table class="status-table">
+        <thead><tr><th>Código</th><th>Nome</th><th>Quando usar</th></tr></thead>
+        <tbody>
+          <tr><td class="code status-2xx">200</td><td>OK</td><td>Sucesso em GET, PUT, PATCH</td></tr>
+          <tr><td class="code status-2xx">201</td><td>Created</td><td>Recurso criado com sucesso (POST)</td></tr>
+          <tr><td class="code status-2xx">204</td><td>No Content</td><td>Sucesso sem corpo de resposta (DELETE)</td></tr>
+          <tr><td class="code status-4xx">400</td><td>Bad Request</td><td>Dados de entrada inválidos</td></tr>
+          <tr><td class="code status-4xx">401</td><td>Unauthorized</td><td>Não autenticado (token ausente/inválido)</td></tr>
+          <tr><td class="code status-4xx">403</td><td>Forbidden</td><td>Autenticado, mas sem permissão</td></tr>
+          <tr><td class="code status-4xx">404</td><td>Not Found</td><td>Recurso não encontrado</td></tr>
+          <tr><td class="code status-4xx">409</td><td>Conflict</td><td>Conflito de estado (ex: e-mail duplicado)</td></tr>
+          <tr><td class="code status-4xx">422</td><td>Unprocessable Entity</td><td>Regra de negócio violada</td></tr>
+          <tr><td class="code status-5xx">500</td><td>Internal Server Error</td><td>Erro inesperado no servidor</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ===================== BOAS PRÁTICAS GERAIS ===================== -->
+    <section class="topic" id="boas-praticas">
+      <div class="topic-head">
+        <span class="badge" style="background:#374151">Resumo</span>
+        <h2>Boas práticas gerais de API REST</h2>
+      </div>
+
+      <ul class="practice-list">
+        <li>URLs com substantivo no plural e sem verbos: <span class="mono">/pedidos</span>, nunca <span class="mono">/buscarPedidos</span>.</li>
+        <li>O verbo HTTP expressa a ação (GET, POST, PUT, PATCH, DELETE) — a URL representa apenas o recurso.</li>
+        <li>GET, PUT e DELETE devem ser idempotentes (repetir a chamada produz o mesmo resultado final).</li>
+        <li>Sempre pagine listagens que podem crescer (<span class="mono">?page=0&amp;size=20</span>).</li>
+        <li>Versione a API (<span class="mono">/api/v1/...</span>) antes de introduzir mudanças que quebram contrato.</li>
+        <li>Documente com Swagger/OpenAPI — endpoint <span class="mono">/swagger-ui.html</span> gerado automaticamente.</li>
+        <li>Libere CORS explicitamente apenas para as origens confiáveis do front-end.</li>
+        <li>Camadas bem separadas (Controller → Service → Repository) facilitam manutenção e testes.</li>
+        <li>Nunca exponha stack trace, senha ou dados sensíveis nas respostas de erro.</li>
+      </ul>
+    </section>
+
+    <footer>Cheat sheet de revisão — API REST com Java &amp; Spring Boot</footer>
+  </main>
+</div>
+
+<script>
+  // ===== Lightweight, dependency-free syntax highlighting =====
+  // Works entirely offline (no CDN): tokenizes comments, strings,
+  // annotations (@Foo) and a small set of Java keywords in one pass.
+  const JAVA_KEYWORDS = ['public','private','protected','class','interface','extends',
+    'implements','static','final','void','return','new','if','else','throws','throw',
+    'import','package','enum','record','this','super','true','false','null','try',
+    'catch','finally'];
+  const KEYWORD_RE = new RegExp('\\b(' + JAVA_KEYWORDS.join('|') + ')\\b');
+
+  function highlightJava(rawText){
+    const escaped = rawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const pattern = /(\/\/[^\n]*)|("(?:[^"\\]|\\.)*")|(@[A-Za-z]+)|\b(public|private|protected|class|interface|extends|implements|static|final|void|return|new|if|else|throws|throw|import|package|enum|record|this|super|true|false|null|try|catch|finally)\b/g;
+    return escaped.replace(pattern, (m, comment, string, annotation, keyword) => {
+      if (comment) return '<span class="tok-comment">' + comment + '</span>';
+      if (string) return '<span class="tok-string">' + string + '</span>';
+      if (annotation) return '<span class="tok-annotation">' + annotation + '</span>';
+      if (keyword) return '<span class="tok-keyword">' + keyword + '</span>';
+      return m;
+    });
+  }
+
+  function highlightProperties(rawText){
+    const escaped = rawText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped.replace(/(^#[^\n]*)/gm, '<span class="tok-comment">$1</span>');
+  }
+
+  document.querySelectorAll('code[class*="language-"]').forEach(el => {
+    const raw = el.textContent;
+    if (el.classList.contains('language-java')) {
+      el.innerHTML = highlightJava(raw);
+    } else if (el.classList.contains('language-properties')) {
+      el.innerHTML = highlightProperties(raw);
+    } // language-text/xml/sql/bash/dockerfile: left as plain, pre-escaped text is fine as-is
+  });
+
+  // ===== Theme toggle (light/dark) — in-memory only, no storage APIs =====
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', () => {
+    const body = document.body;
+    const isDark = body.getAttribute('data-theme') === 'dark';
+    body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    themeToggle.textContent = isDark ? '🌙 Modo escuro' : '☀️ Modo claro';
+  });
+
+  // ===== Search / filter cards and practice items =====
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    document.querySelectorAll('.topic').forEach(topic => {
+      let topicHasVisible = false;
+      const items = topic.querySelectorAll('.card, .practice-list li');
+      items.forEach(item => {
+        const match = item.textContent.toLowerCase().includes(q);
+        item.classList.toggle('hidden', q.length > 0 && !match);
+        if (match || q.length === 0) topicHasVisible = true;
+      });
+      // Also check the table rows in the status-http section
+      const rows = topic.querySelectorAll('table.status-table tbody tr');
+      rows.forEach(row => {
+        const match = row.textContent.toLowerCase().includes(q);
+        row.classList.toggle('hidden', q.length > 0 && !match);
+        if (match || q.length === 0) topicHasVisible = true;
+      });
+      topic.classList.toggle('hidden', q.length > 0 && !topicHasVisible);
+    });
+  });
+
+  // ===== Highlight active section in sidebar while scrolling =====
+  const navLinks = Array.from(document.querySelectorAll('.nav-link'));
+  const topics = Array.from(document.querySelectorAll('.topic'));
+  const setActive = (id) => {
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) setActive(entry.target.id);
+    });
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  topics.forEach(t => observer.observe(t));
+</script>
+</body>
+</html>

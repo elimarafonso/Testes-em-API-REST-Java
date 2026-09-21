@@ -1,0 +1,14 @@
+# 📁 techdesk-chamados-api/src/main/resources/application.yml
+spring:
+  application:
+    name: techdesk-chamados-api
+  datasource:
+    url: jdbc:mysql://localhost:3307/techdesk_chamados
+    username: root
+    password: techdesk123
+  jpa:
+    hibernate:
+      ddl-auto: update   # Hibernate cria/atualiza as tabelas automaticamente a partir das @Entity
+    show-sql: true        # mostra o SQL gerado no console — essencial para aprender e depurar
+server:
+  port: 8080

@@ -1,0 +1,24 @@
+# techdesk/docker-compose.yml
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: techdesk-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: techdesk123
+      MYSQL_DATABASE: techdesk_chamados
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: techdesk-rabbitmq
+    ports:
+      - "5672:5672"    # porta usada pelas aplicações
+      - "15672:15672"  # painel visual (http://localhost:15672, login: guest/guest)
+
+volumes:
+  mysql-data:
