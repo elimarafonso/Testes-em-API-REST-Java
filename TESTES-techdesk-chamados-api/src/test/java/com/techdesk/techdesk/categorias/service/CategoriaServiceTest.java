@@ -1,5 +1,6 @@
 package com.techdesk.techdesk.categorias.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.techdesk.techdesk.categorias.dto.CategoriaPatchRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -149,8 +151,7 @@ class CategoriaServiceTest {
         Categoria categoriaDesenvolvimento = new Categoria(1L, "Desenvolvimento", chamados);
 
         Chamado chamadoErroSite = new Chamado(1L, "Site com erro 500", "site nao abre", categoriaDesenvolvimento);
-        Chamado chamadoErroSistema = new Chamado(2L, "Windows nao Abre", "erro usuario invalido",
-                categoriaDesenvolvimento);
+        Chamado chamadoErroSistema = new Chamado(2L, "Windows nao Abre", "erro usuario invalido", categoriaDesenvolvimento);
 
         chamados.add(chamadoErroSite);
         chamados.add(chamadoErroSistema);
@@ -202,4 +203,64 @@ class CategoriaServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deve Atualizar Uma Categoria")
+    public void deveAtualizarUmaCategoria() {
+        Categoria categoriaOld = new Categoria(1L, "Almoxarifado", null);
+        CategoriaPatchRequestDto categoriaNovoNome = new CategoriaPatchRequestDto("Desenvolvimento");
+
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoriaOld));
+
+        CategoriaResponseDTO categoriaAtualizada = categoriaService.atualiza(1L, categoriaNovoNome);
+
+        assertThat(categoriaOld.getNome()).isEqualTo("Desenvolvimento");
+        assertThat(categoriaAtualizada.nome()).isEqualTo("Desenvolvimento");
+        verify(categoriaRepository, times(1)).save(categoriaOld);
+
+    }
+
+    @Test
+    @DisplayName("Deve lancar Categoria Nao Encontrada Exception")
+    public void deveLancarCategoriaNaoEncontrada() {
+
+        CategoriaPatchRequestDto categoriaNovoNome = new CategoriaPatchRequestDto("Desenvolvimento");
+
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                categoriaService.atualiza(1L, categoriaNovoNome))
+                .isInstanceOf(CategoriaNaoEncontradaException.class);
+
+        assertThrows(CategoriaNaoEncontradaException.class, () -> categoriaService.atualiza(1L, categoriaNovoNome));
+
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

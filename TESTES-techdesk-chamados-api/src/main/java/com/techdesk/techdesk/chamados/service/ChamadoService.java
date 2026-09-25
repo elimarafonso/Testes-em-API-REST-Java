@@ -28,8 +28,9 @@ public class ChamadoService {
 		this.chamadoRepository = chamadoRepository;
 		this.categoriaRepository = categoriaRepository;
 	}
-
-	public ChamadoResponseDTO criar(ChamadoRequestDTO dto) throws Throwable {
+	// ##########################
+	// ##########################
+	public ChamadoResponseDTO criar(ChamadoRequestDTO dto) {
 		Categoria categoria = (Categoria) categoriaRepository.findById(dto.categoriaId())
 				.orElseThrow(() -> new CategoriaNaoEncontradaException(dto.categoriaId()));
 
@@ -45,6 +46,9 @@ public class ChamadoService {
 		return toResponseDTO(salvo);
 
 	}
+
+	// ##########################
+	// ##########################
 
 	public List<ChamadoResponseDTO> criarEmLote(List<ChamadoRequestDTO> dtos) {
 
