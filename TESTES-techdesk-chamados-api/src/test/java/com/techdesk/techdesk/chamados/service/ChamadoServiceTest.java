@@ -1,6 +1,7 @@
 package com.techdesk.techdesk.chamados.service;
 
 import com.techdesk.techdesk.categorias.entity.Categoria;
+import com.techdesk.techdesk.categorias.exception.CategoriaNaoEncontradaException;
 import com.techdesk.techdesk.categorias.repository.CategoriaRepository;
 import com.techdesk.techdesk.chamados.dto.ChamadoRequestDTO;
 import com.techdesk.techdesk.chamados.dto.ChamadoResponseDTO;
@@ -18,9 +19,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 class ChamadoServiceTest {
 
@@ -38,11 +41,9 @@ class ChamadoServiceTest {
     @DisplayName("Deve Criar um Chamado")
     void deveCriarUmChamado() {
 
-        Categoria categoria = new Categoria(1L,"hardware", null);
+        Categoria categoria = new Categoria(1L, "hardware", null);
 
-        ChamadoRequestDTO chamadoRequestDTO = new ChamadoRequestDTO("Impressora nao liga",
-                                                                    "não consigo ligar a impressora",
-                                                                    1L);
+        ChamadoRequestDTO chamadoRequestDTO = new ChamadoRequestDTO("Impressora nao liga", "não consigo ligar a impressora", 1L);
 
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
         //"Quando save() for chamado, devolva o próprio objeto Chamado que recebeu."
@@ -62,5 +63,19 @@ class ChamadoServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deve lançar exceção quando categoria não existir")
+    void deveLancarExcecaoQuandoCategoriaNaoExistir() {
+
+        ChamadoRequestDTO chamadoRequestDTO = new ChamadoRequestDTO("Impressora nao liga", "não consigo ligar a impressora", 1L);
+
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> chamadoService.criar(chamadoRequestDTO)).isInstanceOf(CategoriaNaoEncontradaException.class);
+
+        verify(categoriaRepository).findById(1L);
+        verify(chamadoRepository, never()).save(any(Chamado.class));
+
+    }
 
 }
