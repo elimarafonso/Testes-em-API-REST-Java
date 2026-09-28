@@ -1,6 +1,8 @@
 package com.techdesk.techdesk.security.service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +53,8 @@ public class TokenService {
 
     private Instant gerarDataExpiracao() {
     	Instant agora = Instant.now();
-    	return agora.plus(expirationMinutes,ChronoUnit.MINUTES) ;//LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        //agora.plus(expirationMinutes,ChronoUnit.MINUTES);
+    	return  LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 }
 

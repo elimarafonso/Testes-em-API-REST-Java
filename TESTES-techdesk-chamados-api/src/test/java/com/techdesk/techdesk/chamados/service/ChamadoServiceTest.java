@@ -17,6 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -77,5 +80,116 @@ class ChamadoServiceTest {
         verify(chamadoRepository, never()).save(any(Chamado.class));
 
     }
+
+    @Test
+    @DisplayName("Deve Criar Chamados Em Lote")
+    void deveCriarChamadosEmLote() {
+
+
+        Categoria categoriaSoftware = new Categoria(1L, "Software", null);
+        Categoria categoriaHardware = new Categoria(2L, "hardware", null);
+
+        ChamadoRequestDTO chamadoSoftware = new ChamadoRequestDTO("Programa não abre", "Não acho o icone do programa", categoriaSoftware.getId());
+        ChamadoRequestDTO chamadoHardware = new ChamadoRequestDTO("Computador não liga", "não consigo ligar a computador", categoriaHardware.getId());
+
+        List<ChamadoRequestDTO> dtos = List.of(chamadoSoftware, chamadoHardware);
+
+        when(categoriaRepository.findById(1L))
+                .thenReturn(Optional.of(categoriaSoftware));
+        when(categoriaRepository.findById(2L))
+                .thenReturn(Optional.of(categoriaHardware));
+
+        when(chamadoRepository.saveAll(anyList()))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        List<ChamadoResponseDTO> chamadosCriadosDTOS = chamadoService.criarEmLote(dtos);
+
+        assertThat(chamadosCriadosDTOS).isNotNull();
+        assertThat(chamadosCriadosDTOS.size()).isEqualTo(2);
+
+        assertThat(chamadosCriadosDTOS.getFirst().titulo())
+                .isEqualTo(chamadoSoftware.titulo());
+        assertThat(chamadosCriadosDTOS.getFirst().descricao())
+                .isEqualTo(chamadoSoftware.descricao());
+        assertThat(chamadosCriadosDTOS.getFirst().categoriaNome())
+                .isEqualTo(categoriaSoftware.getNome());
+        assertThat(chamadosCriadosDTOS.getFirst().status())
+                .isEqualTo(StatusChamado.ABERTO);
+        assertThat(chamadosCriadosDTOS.getFirst().dataAbertura())
+                .isNotNull();
+
+        assertThat(chamadosCriadosDTOS.get(1).titulo())
+                .isEqualTo(chamadoHardware.titulo());
+        assertThat(chamadosCriadosDTOS.get(1).descricao())
+                .isEqualTo(chamadoHardware.descricao());
+        assertThat(chamadosCriadosDTOS.get(1).categoriaNome())
+                .isEqualTo(categoriaHardware.getNome());
+        assertThat(chamadosCriadosDTOS.get(1).status())
+                .isEqualTo(StatusChamado.ABERTO);
+        assertThat(chamadosCriadosDTOS.get(1).dataAbertura())
+                .isNotNull();
+
+        verify(categoriaRepository, times(1)).findById(1L);
+        verify(categoriaRepository, times(1)).findById(2L);
+        verify(chamadoRepository).saveAll(anyList());
+
+    }
+
+    @Test
+    @DisplayName("Deve Lancar Uma Categoria Nao Encontrada Exception")
+    void deveLancarUmaCategoriaNaoEncontradaException() {
+
+        List<ChamadoRequestDTO> dtos = new ArrayList<>();
+
+        ChamadoRequestDTO chamadoSoftware =
+                new ChamadoRequestDTO(
+                        "Programa não abre",
+                        "Não acho o icone do programa",
+                        1L);
+
+        dtos.add(chamadoSoftware);
+
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                chamadoService.criarEmLote(dtos))
+                .isInstanceOf(CategoriaNaoEncontradaException.class);
+
+        verify(categoriaRepository).findById(1L);
+        verify(chamadoRepository, never()).saveAll(anyList());
+
+    }
+
+    @Test
+    @DisplayName("Deve Retornar Uma Lista De Chamados")
+    void deveRetornarUmaListaDeChamados() {
+
+        Categoria categoriaSoftware = new Categoria(1L, "Software", null);
+        Categoria categoriaHardware = new Categoria(2L, "hardware", null);
+
+
+        Chamado chamadoSoftware = new Chamado(1L, "Programa não abre", "Não acho o icone do programa", categoriaSoftware);
+        Chamado chamadoHardware = new Chamado(2L, "Computador não liga", "não consigo ligar a computador", categoriaHardware);
+
+        List<Chamado> chamados = List.of(chamadoSoftware, chamadoHardware);
+
+        when(chamadoRepository.findAll()).thenReturn(chamados);
+
+        List<ChamadoResponseDTO> chamadoResponseDTOS = chamadoService.listarTodos();
+
+        assertThat(chamadoResponseDTOS).isNotNull();
+        assertThat(chamadoResponseDTOS).hasSize(2);
+        assertThat(chamadoResponseDTOS.getFirst().titulo()).isEqualTo(chamadoSoftware.getTitulo());
+        assertThat(chamadoResponseDTOS.getFirst().descricao()).isEqualTo(chamadoSoftware.getDescricao());
+        assertThat(chamadoResponseDTOS.getFirst().categoriaNome()).isEqualTo(chamadoSoftware.getCategoria().getNome());
+
+        assertThat(chamadoResponseDTOS.get(1).titulo()).isEqualTo(chamadoHardware.getTitulo());
+        assertThat(chamadoResponseDTOS.get(1).descricao()).isEqualTo(chamadoHardware.getDescricao());
+        assertThat(chamadoResponseDTOS.get(1).categoriaNome()).isEqualTo(chamadoHardware.getCategoria().getNome());
+
+        verify(chamadoRepository, times(1)).findAll();
+
+    }
+
 
 }
