@@ -134,6 +134,26 @@ class ChamadoServiceTest {
         verify(chamadoRepository).saveAll(anyList());
 
     }
+    @Test
+    @DisplayName("Nao Deve Salvar Nenhum Chamado Quando Uma Categoria Nao Existir")
+    void naoDeveSalvarNenhumChamadoQuandoUmaDasCategoriasNaoExistir(){
+        Categoria categoriaSoftware = new Categoria(1L, "Software", null);
+
+        ChamadoRequestDTO chamadoSoftware = new ChamadoRequestDTO("Programa não abre", "Não acho o icone do programa", categoriaSoftware.getId());
+        ChamadoRequestDTO chamadoNaoExiste = new ChamadoRequestDTO("Computador não liga", "não consigo ligar a computador", 2L);
+
+        List<ChamadoRequestDTO> dtos = List.of(chamadoSoftware);
+
+        when(categoriaRepository.findById(1L))
+                .thenReturn(Optional.of(categoriaSoftware));
+        when(categoriaRepository.findById(2L)).thenReturn(Optional.empty());
+
+        when(chamadoRepository.saveAll(anyList()))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        List<ChamadoResponseDTO> chamadoResponseDTOS = chamadoService.criarEmLote(dtos);
+
+    }
 
     @Test
     @DisplayName("Deve Lancar Uma Categoria Nao Encontrada Exception")
