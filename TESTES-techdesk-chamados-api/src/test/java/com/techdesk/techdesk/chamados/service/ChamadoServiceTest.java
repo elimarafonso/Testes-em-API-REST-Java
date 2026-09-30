@@ -7,6 +7,7 @@ import com.techdesk.techdesk.chamados.dto.ChamadoRequestDTO;
 import com.techdesk.techdesk.chamados.dto.ChamadoResponseDTO;
 import com.techdesk.techdesk.chamados.entity.Chamado;
 import com.techdesk.techdesk.chamados.entity.StatusChamado;
+import com.techdesk.techdesk.chamados.exception.ChamadoNaoEncontradoException;
 import com.techdesk.techdesk.chamados.repository.ChamadoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -134,24 +135,26 @@ class ChamadoServiceTest {
         verify(chamadoRepository).saveAll(anyList());
 
     }
+
     @Test
     @DisplayName("Nao Deve Salvar Nenhum Chamado Quando Uma Categoria Nao Existir")
-    void naoDeveSalvarNenhumChamadoQuandoUmaDasCategoriasNaoExistir(){
+    void naoDeveSalvarNenhumChamadoQuandoUmaDasCategoriasNaoExistir() {
+
         Categoria categoriaSoftware = new Categoria(1L, "Software", null);
 
         ChamadoRequestDTO chamadoSoftware = new ChamadoRequestDTO("Programa não abre", "Não acho o icone do programa", categoriaSoftware.getId());
-        ChamadoRequestDTO chamadoNaoExiste = new ChamadoRequestDTO("Computador não liga", "não consigo ligar a computador", 2L);
+        ChamadoRequestDTO chamadoNaoExiste = new ChamadoRequestDTO("Computador não liga", "não consigo ligar a computador", 2L); // catID 2L nao existe
 
-        List<ChamadoRequestDTO> dtos = List.of(chamadoSoftware);
+        List<ChamadoRequestDTO> dtos = List.of(chamadoSoftware, chamadoNaoExiste);
 
-        when(categoriaRepository.findById(1L))
-                .thenReturn(Optional.of(categoriaSoftware));
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoriaSoftware));
         when(categoriaRepository.findById(2L)).thenReturn(Optional.empty());
 
-        when(chamadoRepository.saveAll(anyList()))
-                .thenAnswer(inv -> inv.getArgument(0));
+        assertThatThrownBy(() -> chamadoService.criarEmLote(dtos)).isInstanceOf(CategoriaNaoEncontradaException.class);
 
-        List<ChamadoResponseDTO> chamadoResponseDTOS = chamadoService.criarEmLote(dtos);
+        verify(categoriaRepository).findById(chamadoSoftware.categoriaId());
+        verify(categoriaRepository).findById(2L);
+        verify(chamadoRepository, never()).saveAll(anyList());
 
     }
 
