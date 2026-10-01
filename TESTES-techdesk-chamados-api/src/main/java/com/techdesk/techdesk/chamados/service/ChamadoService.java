@@ -72,22 +72,21 @@ public class ChamadoService {
         return saveAll.stream().map(chamado -> toResponseDTO(chamado)).toList();
     }
 
-    // Teste criado
+    // Teste Criado
     public List<ChamadoResponseDTO> listarTodos() {
-        return chamadoRepository.findAll()
-                .stream()
-                .map(ChamadoService::toResponseDTO)
-                .toList();
+        return chamadoRepository.findAll().stream().map(ChamadoService::toResponseDTO).toList();
     }
 
-
-    public ChamadoResponseDTO buscarPorId(Long id) throws Throwable {
+    //Teste Criado
+    public ChamadoResponseDTO buscarPorId(Long id)  {
         Chamado chamado = chamadoRepository.findById(id).orElseThrow(() -> new ChamadoNaoEncontradoException(id.toString()));
 
         return toResponseDTO(chamado);
     }
 
-    public ChamadoResponseDTO atualizarStatus(Long id, StatusChamado novoStatus) throws Throwable {
+    //#############################
+    //#############################
+    public ChamadoResponseDTO atualizarStatus(Long id, StatusChamado novoStatus)  {
         Chamado chamado = chamadoRepository.findById(id).orElseThrow(() -> new ChamadoNaoEncontradoException(id.toString()));
         chamado.setStatusChamado(novoStatus);
         if (novoStatus == StatusChamado.FECHADO) {
@@ -95,8 +94,10 @@ public class ChamadoService {
         }
         return toResponseDTO(chamadoRepository.save(chamado));
     }
+    //#############################
+    //#############################
 
-    public void excluir(Long id) throws Throwable {
+    public void excluir(Long id) {
         if (!chamadoRepository.existsById(id)) {
             throw new ChamadoNaoEncontradoException(id.toString());
         }

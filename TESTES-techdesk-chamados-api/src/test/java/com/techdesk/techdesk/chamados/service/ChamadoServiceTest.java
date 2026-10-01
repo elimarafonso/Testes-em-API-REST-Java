@@ -1,5 +1,6 @@
 package com.techdesk.techdesk.chamados.service;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.techdesk.techdesk.categorias.entity.Categoria;
 import com.techdesk.techdesk.categorias.exception.CategoriaNaoEncontradaException;
 import com.techdesk.techdesk.categorias.repository.CategoriaRepository;
@@ -214,5 +215,86 @@ class ChamadoServiceTest {
 
     }
 
+
+    @Test
+    @DisplayName("Deve Buscar Chamado Por Id")
+    void deveBuscarChamadoPorId() {
+
+        Categoria categoriaSoftware = new Categoria(1L, "Software", null);
+        Chamado chamadoExistente = new Chamado(1L, "Sistema não abre", "Não consigo abrir o sistema", categoriaSoftware);
+
+        when(chamadoRepository.findById(chamadoExistente.getId())).thenReturn(Optional.of(chamadoExistente));
+
+        ChamadoResponseDTO chamadoResponseDTO = chamadoService.buscarPorId(1L);
+
+        assertThat(chamadoResponseDTO).isNotNull();
+        assertThat(chamadoResponseDTO)
+                .extracting("id", "titulo", "descricao", "categoriaNome")
+                .containsExactly(chamadoExistente.getId(), chamadoExistente.getTitulo(), chamadoExistente.getDescricao(), chamadoExistente.getCategoria().getNome());
+
+        verify(chamadoRepository).findById(chamadoExistente.getId());
+
+    }
+
+    @Test
+    @DisplayName("Deve Lancar Uma Exception Quando Não Encontrar Chamado")
+    void deveLancarUmaExceptionQuandoNaoEncontrarChamado() {
+
+        when(chamadoRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> chamadoService.buscarPorId(1L)).isInstanceOf(ChamadoNaoEncontradoException.class);
+
+        verify(chamadoRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Deve Atualizar o Status Do Chamado Para Fechado")
+    void deveAtualizarStatusDoChamadoParaFechado() {
+
+        StatusChamado statusVelho = StatusChamado.ABERTO;
+        StatusChamado statusNovo = StatusChamado.FECHADO;
+        Categoria categoriaSoftware = new Categoria(1L, "Software", null);
+
+        Chamado chamado = new Chamado(
+                1L,
+                "Sistema nao abre",
+                "nao consigo abrir sistema",
+                statusVelho,
+                null,
+                null,
+                categoriaSoftware);
+
+
+        when(chamadoRepository.findById(1L)).thenReturn(Optional.of(chamado));
+        when(chamadoRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+
+        ChamadoResponseDTO chamadoResponseDTO = chamadoService.atualizarStatus(1L, statusNovo);
+
+        assertThat(chamadoResponseDTO).isNotNull();
+        assertThat(chamadoResponseDTO.id()).isEqualTo(chamado.getId());
+        assertThat(chamadoResponseDTO.titulo()).isEqualTo(chamado.getTitulo());
+        assertThat(chamadoResponseDTO.descricao()).isEqualTo(chamado.getDescricao());
+        assertThat(chamadoResponseDTO.categoriaNome()).isEqualTo(chamado.getCategoria().getNome());
+
+        assertThat(chamadoResponseDTO.status()).isEqualTo(statusNovo);
+        assertThat(chamado.getDataFechamento()).isNotNull(); // NOVO STATUS É DE FECHAMENTO, ENTÃO PELA LOGICA DEVE ALTERAR A DATA DE FECHAMENTO
+
+        verify(chamadoRepository).findById(1L);
+        verify(chamadoRepository).save(chamado);
+
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando chamado não existir")
+    void deveLancarExcecaoQuandoChamadoNaoExistir() {
+
+        StatusChamado statusNovo = StatusChamado.FECHADO;
+        when(chamadoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> chamadoService.atualizarStatus(1L, statusNovo)).isInstanceOf(ChamadoNaoEncontradoException.class);
+        verify(chamadoRepository).findById(1L);
+        verify(chamadoRepository, never()).save(any());
+
+    }
 
 }

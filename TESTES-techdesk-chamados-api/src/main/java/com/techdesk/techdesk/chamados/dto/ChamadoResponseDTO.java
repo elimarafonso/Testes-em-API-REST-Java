@@ -11,4 +11,6 @@ public record ChamadoResponseDTO(
         StatusChamado status,
         String categoriaNome,
         LocalDateTime dataAbertura
-) {}
+) {
+
+}

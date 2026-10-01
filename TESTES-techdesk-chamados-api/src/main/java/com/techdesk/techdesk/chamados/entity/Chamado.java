@@ -46,7 +46,7 @@ public class Chamado {
 	}
 
 	public Chamado(Long id, String titulo, String descricao, StatusChamado statusChamado, LocalDateTime dataAbertura,
-			LocalDateTime dataFechamento, Categoria categoria, Tecnico tecnico, Usuario usuario) {
+			LocalDateTime dataFechamento, Categoria categoria ){//} , Tecnico tecnico, Usuario usuario) {
 		this.id = id;
 		this.titulo = titulo;
 		this.descricao = descricao;
