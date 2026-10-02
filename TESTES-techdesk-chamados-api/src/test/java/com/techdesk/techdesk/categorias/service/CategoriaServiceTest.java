@@ -191,7 +191,7 @@ class CategoriaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve Excluir Uma Categoria")
+    @DisplayName("Deve Excluir Uma Categoria exixtente")
     public void deveExcluirUmaCategoria() {
 
         when(categoriaRepository.existsById(1L)).thenReturn(true);
