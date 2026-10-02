@@ -297,4 +297,24 @@ class ChamadoServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deve Excluir Um Chamado")
+    void deveExcluirUmaChamado() {
+
+        when(chamadoRepository.existsById(1L)).thenReturn(true);
+        chamadoService.excluir(1L);
+        verify(chamadoRepository).deleteById(1L);
+
+    }
+
+    @Test
+    @DisplayName("Deve Lancar Uma Exception Quando Chamado Nao Encontrado")
+    void deveLancarUmaChamadoNaoEncontrado() {
+
+        when(chamadoRepository.existsById(1L)).thenReturn(false);
+        assertThatThrownBy(() -> chamadoService.excluir(1L)).isInstanceOf(ChamadoNaoEncontradoException.class);
+
+        verify(chamadoRepository, never()).deleteById(1L);
+    }
+
 }

@@ -84,8 +84,7 @@ public class ChamadoService {
         return toResponseDTO(chamado);
     }
 
-    //#############################
-    //#############################
+    // Teste Criado
     public ChamadoResponseDTO atualizarStatus(Long id, StatusChamado novoStatus)  {
         Chamado chamado = chamadoRepository.findById(id).orElseThrow(() -> new ChamadoNaoEncontradoException(id.toString()));
         chamado.setStatusChamado(novoStatus);
@@ -94,18 +93,20 @@ public class ChamadoService {
         }
         return toResponseDTO(chamadoRepository.save(chamado));
     }
-    //#############################
-    //#############################
 
+    //#############################
+    //#############################
     public void excluir(Long id) {
         if (!chamadoRepository.existsById(id)) {
             throw new ChamadoNaoEncontradoException(id.toString());
         }
         chamadoRepository.deleteById(id);
     }
+    //#############################
+    //#############################
 
-    // Método auxiliar privado: converte Entity em DTO — mantém essa conversão
-    // num único lugar, em vez de espalhar pelo Controller.
+    /* Metodo auxiliar privado: converte Entity em DTO — mantém essa conversão
+     num único lugar, em vez de espalhar pelo Controller.*/
 
     public ChamadoResponseDTO atualizaChamado(Long id, ChamadoPatchRequestDto chamadoNew) throws Throwable {
 
